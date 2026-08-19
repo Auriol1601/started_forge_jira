@@ -23,15 +23,16 @@ export default function TopPanel() {
                 <div className="panel-content">
                     <div className="left-col">
                         <div className="circles-row">
-                            <MetricCircle size="large" percent="45 %" label="Horizon 2026" />
+                            <div className="large-stack">
+                                <MetricCircle size="large" percent="45 %" label="Horizon 2026" />
+                                <button className="action-pill">GENERER UN RAPPORT</button>
+                            </div>
                             <div className="small-circles">
                                 <MetricCircle size="small" percent="20 %" label="AXE 1" />
                                 <MetricCircle size="small" percent="20 %" label="AXE 2" />
                                 <MetricCircle size="small" percent="20 %" label="AXE 3" />
                             </div>
                         </div>
-
-                        <button className="action-pill">GENERER UN RAPPORT</button>
                     </div>
 
                     <div className="right-col">
