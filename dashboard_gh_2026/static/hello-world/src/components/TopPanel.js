@@ -18,7 +18,7 @@ export default function TopPanel() {
     return (
         <div className="top-panel">
             <div className="top-panel-inner">
-                <div className="panel-dots">⋮</div>
+                <div className="panel-dots"><span></span><span></span><span></span></div>
                 <div className="panel-content">
                     <div className="left-col">
                         <div className="circles-row">
