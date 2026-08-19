@@ -20,8 +20,10 @@ html,body,#root{height:100%;}
 .app-header .hamburger .bar{display:block;height:4px;border-radius:3px;background:var(--primary-dark-very);width:22px}
 .app-header .brand{background:var(--primary-dark);color:var(--text-light);padding:6px 10px;border-radius:6px;font-weight:700;font-size:15px;border:none;cursor:pointer}
 .app-header .spacer{flex:1}
-.primary-btn,.create-btn{background:var(--primary-dark);color:var(--accent-yellow);border:none;padding:6px 12px;border-radius:18px;font-size:13px;cursor:pointer}
-.create-btn{padding:6px 12px;border-radius:999px;font-weight:700}
+.primary-btn,.create-btn{background:var(--primary-dark);color:#ffffff;border:none;padding:8px 14px;border-radius:18px;font-size:13px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,0.18);transition:transform .12s ease,box-shadow .12s ease}
+.create-btn{padding:8px 14px;border-radius:999px;font-weight:700}
+.primary-btn:active,.create-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(0,0,0,0.12)}
+.primary-btn:focus-visible,.create-btn:focus-visible{outline:3px solid rgba(255,221,0,0.28);outline-offset:2px}
 
 .main-area{padding:30px}
 .top-panel{display:flex;justify-content:center;padding:24px 0}
