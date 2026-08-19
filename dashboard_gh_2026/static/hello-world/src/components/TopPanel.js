@@ -2,6 +2,7 @@ import React from 'react';
 import MetricCircle from './MetricCircle';
 import ProjectStatusRow from './ProjectStatusRow';
 import SummaryBar from './SummaryBar';
+import MenuOption from './MenuOption';
 
 const projects = [
     { label: 'GIM SCHEMA PAIEMENT', value: '70%' },
@@ -24,6 +25,7 @@ export default function TopPanel() {
                     <div className="left-col">
                         <div className="circles-row">
                             <div className="large-stack">
+                                <MenuOption />
                                 <MetricCircle size="large" percent="45 %" label="Horizon 2026" />
                                 <button className="action-pill">GENERER UN RAPPORT</button>
                             </div>
