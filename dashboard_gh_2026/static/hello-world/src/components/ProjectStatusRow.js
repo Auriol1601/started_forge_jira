@@ -9,11 +9,9 @@ export default function ProjectStatusRow({ label, value }){
     return (
         <div className="project-row">
             <div className="badge">{value}</div>
-            <div className="project-tag">
+            <div className="tag-bar">
+                <div className="tag-fill" style={{ width: `${pct}%` }} />
                 <div className="tag-label">{label}</div>
-                <div className="tag-bar">
-                    <div className="tag-fill" style={{ width: `${pct}%` }} />
-                </div>
             </div>
         </div>
     );

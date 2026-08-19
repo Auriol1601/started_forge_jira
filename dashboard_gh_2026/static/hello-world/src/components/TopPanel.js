@@ -34,9 +34,11 @@ export default function TopPanel() {
                     </div>
 
                     <div className="right-col">
-                        {projects.map((p, i) => (
-                            <ProjectStatusRow key={i} label={p.label} value={p.value} />
-                        ))}
+                        <div className="project-list">
+                            {projects.map((p, i) => (
+                                <ProjectStatusRow key={i} label={p.label} value={p.value} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
