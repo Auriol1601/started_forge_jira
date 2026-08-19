@@ -27,6 +27,8 @@ html,body,#root{height:100%;}
 .main-area{padding:30px}
 .top-panel{display:flex;justify-content:center;padding:24px 0}
 .top-panel-inner{background:var(--card);border-radius:16px;width:1274px;height:678px;box-shadow:0 8px 30px rgba(0,0,0,0.12);position:relative;padding:28px;box-sizing:border-box}
+/* leave extra bottom padding so content doesn't overlap the anchored summary bar */
+.top-panel-inner{padding-bottom:120px}
 .card{background:transparent}
 .panel-content{display:flex;gap:32px;align-items:flex-start}
 .left-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:20px}
@@ -57,11 +59,14 @@ html,body,#root{height:100%;}
 
 .card-dots{position:absolute;left:20px;top:18px;display:flex;gap:8px}
 .card-dots span{width:10px;height:10px;background:#0f234d;border-radius:50%;display:inline-block}
-.summary-bar{max-width:1100px;margin:10px auto 60px;background:var(--footer-dark);padding:12px 20px;border-radius:10px;display:flex;align-items:center;gap:20px;color:var(--accent-yellow);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+.summary-bar{position:absolute;left:28px;right:28px;bottom:20px;max-width:none;margin:0;background:var(--footer-dark);padding:12px 20px;border-radius:10px;display:flex;align-items:center;gap:20px;color:var(--accent-yellow);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
 .summary-left{flex:1;font-weight:800}
-.summary-center{color:var(--highlight-red);font-weight:900;font-size:20px}
-.summary-right{margin-left:auto;color:var(--highlight-green);font-weight:800}
+.summary-center{display:flex;gap:24px;align-items:center;color:var(--highlight-red);font-weight:900;font-size:20px}
+.summary-right{flex:1;text-align:right;color:var(--highlight-green);font-weight:800}
 .big-red{font-size:28px;margin-right:6px}
+.big-yellow{font-size:28px;margin-right:6px;color:var(--accent-yellow);font-weight:900}
+.label-yellow{color:var(--accent-yellow);font-weight:800}
+.label-red{color:var(--highlight-red);font-weight:800}
 .metric-bar .arbitrages{color:#ff2b2b;font-weight:700;margin-left:20px}
 .metric-bar .big{font-size:28px;color:#ff2b2b;margin-right:6px}
 

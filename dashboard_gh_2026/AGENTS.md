@@ -1,71 +1,127 @@
-# Agent Task Definition: Dashboard UI Component Implementation (React)
+# Interface « Accueil — GIM Horizon 2026 »
 
-## 🎯 Role & Objective
-You are an expert Frontend Developer specializing in React and modern CSS.
-Your objective is to fully implement a responsive analytical dashboard component based on the provided UI design reference (`Tb_view.png`).
+## Informations générales
 
----
-
-## 🎨 Palette & Visual Tokens
-
-Extract and strictly apply the following visual style tokens:
-
-* **Primary Dark Blue (Circles/Cards):** `#1E2A66`
-* **Footer Dark Navy (Bottom Bar):** `#0A1128`
-* **Accent Yellow (Button/Project Bar):** `#FFDF00`
-* **Muted Grey-Blue (Percentage Badge):** `#8C9BB4`
-* **Highlight Red (Arbitrages):** `#E52222`
-* **Highlight Green (Completed Projects):** `#00C853`
-* **Typography:** Modern Sans-Serif (`Inter`, `Roboto`, or `system-ui`)
-* **Layout Constraints:** Maintain high-fidelity layout alignment, proportions, and border radiuses as seen in the mockup.
+- **Type** : Tableau de bord (Dashboard) de suivi de projet
+- **Dimensions** : 1440 × 1024 px (format desktop)
+- **Fond général** : Bleu marine foncé (`#283478` — rgb 40, 52, 120)
 
 ---
 
-## 🧩 Component Architecture Requirements
+## 1. Barre d'en-tête (Header)
 
-Divide the implementation into modular, reusable functional components:
+- **Dimensions** : 1440 × 90 px
+- **Couleur de fond** : Jaune vif (`#FFDD00` — rgb 255, 221, 0)
 
-1. `Dashboard.jsx` (Main Container)
-2. `TopPanel.jsx` (White card container with 3-dot header)
-3. `MetricCircle.jsx` (Reusable circular indicator for 45% & AXE items)
-4. `ProjectStatusRow.jsx` (Reusable bar for project progress)
-5. `SummaryBar.jsx` (Bottom dark info banner)
+### Éléments du header (de gauche à droite) :
+
+| Élément             | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| **Menu hamburger**  | 3 barres horizontales bleu foncé (`#14213D`), empilées verticalement        |
+| **Logo / Titre**    | Cartouche arrondi bleu marine contenant « **GIM-HZ 2026** » en blanc, 17px |
+| **Bouton d'action** | Bouton arrondi bleu marine avec texte « **creer programme** » en blanc, 15px|
 
 ---
 
-## 📐 Detailed Layout & Specifications
+## 2. Zone principale — Dashboard (Carte blanche)
 
-### 1. Main Canvas & Structural Container (`TopPanel`)
-- White rounded container (`border-radius: 16px`) with light subtle shadow.
-- **Top-Left Header:** 3 stacked vertical dots (`⋮` icon or SVG indicator).
+- **Dimensions** : 1274 × 678 px
+- **Couleur de fond** : Blanc (`#FFFFFF`)
+- **Position** : Centrée sur le fond bleu marine
 
-### 2. Left Column: Core KPI Hub & Action
-- **Main Metric Circle:** 
-  - Large `#1E2A66` circle.
-  - Text inside: `45 %` (large font, bold) and `Horizon 2026` (sub-label).
-- **Sub-Metric Circles (AXE Cluster):**
-  - Three smaller `#1E2A66` circles positioned as a cluster/tree structure (`AXE 1`, `AXE 2`, `AXE 3`).
-  - Text inside each: `20 %` (bold) and `AXE X` (sub-label).
-- **Action Button:**
-  - Placed directly below the main metric circle.
-  - Full rounded pill shape (`border-radius: 24px`), `#FFDF00` background.
-  - Text: `GENERER UN RAPPORT` (Dark blue font, centered, bold, hover effect).
+### 2.1 Menu contextuel (options)
 
-### 3. Right Column: Project Progress List
-Render a vertical stack of project status bars (`ProjectStatusRow`). Each row consists of:
-- **Left Badge:** `#8C9BB4` background, white text displaying the percentage (`70%`, `20%`, etc.).
-- **Right Tag:** `#FFDF00` background, bold dark text displaying the project name.
+- **Position** : Coin supérieur gauche du dashboard
+- **Apparence** : 3 points ronds bleu foncé (`#14213D`) alignés horizontalement (14 × 14 px chacun)
+- **Fonction** : Icône de menu contextuel « ••• »
 
-#### Mock Data Array for Projects:
-```json
-[
-  { "label": "GIM SCHEMA PAIEMENT", "value": "70%" },
-  { "label": "GIM TRILOGIE", "value": "70%" },
-  { "label": "GIM SOUVERA", "value": "70%" },
-  { "label": "GIM TECHNOPOLE", "value": "20%" },
-  { "label": "GIMPAY", "value": "70%" },
-  { "label": "GIM EXCELLENCE", "value": "65%" },
-  { "label": "SIMULATION GAMIFI", "value": "80%" },
-  { "label": "GIMPULSE", "value": "50%" },
-  { "label": "GIM TRANSFORM", "value": "70%" }
-]
+---
+
+### 2.2 Partie gauche — Graphique en bulles (Cercles de progression)
+
+#### Cercle principal (avancement global)
+
+- **Dimensions** : ≈ 379 × 372 px
+- **Couleur de fond** : Bleu marine (`#283478`)
+- **Contenu** :
+  - **« 45 % »** — police 96 px, couleur blanche, centré
+  - **« Horizon 2026 »** — police 32 px, couleur blanche, sous le pourcentage
+
+> Représente le **pourcentage global d'avancement** du programme Horizon 2026.
+
+#### Cercles satellites (avancement par axe)
+
+Trois cercles plus petits (≈ 156 × 154 px), fond bleu marine, disposés autour du cercle principal :
+
+| Position              | Axe       | Pourcentage | Police pourcentage | Police label |
+|-----------------------|-----------|-------------|--------------------|--------------|
+| En haut à droite      | **AXE 1** | **20 %**    | 36 px, blanc       | 16 px, blanc |
+| Au milieu à droite    | **AXE 2** | **20 %**    | 36 px, blanc       | 16 px, blanc |
+| En bas au centre      | **AXE 3** | **20 %**    | 36 px, blanc       | 16 px, blanc |
+
+---
+
+### 2.3 Partie droite — Liste des programmes (Barres de progression)
+
+Liste verticale de **9 programmes**, chacun représenté par une barre horizontale (317 × 43 px) composée de :
+- Un **fond bleu marine** (barre complète = 100 %)
+- Une **barre jaune superposée** (largeur proportionnelle au pourcentage)
+- Le **pourcentage** à gauche (police 24 px, blanc)
+- Le **nom du programme** à droite (police 19 px, blanc)
+
+| #  | Pourcentage | Barre jaune       | Nom du programme          |
+|----|-------------|-------------------|---------------------------|
+| 1  | **70 %**    | ████████████████░ | **GIM SCHEMA PAIEMENT**   |
+| 2  | **70 %**    | ████████████████░ | **GIM TRILOGIE**          |
+| 3  | **70 %**    | ████████████████░ | **GIM SOUVERA**           |
+| 4  | **20 %**    | ████░░░░░░░░░░░░░ | **GIM TECHNOPOLE**        |
+| 5  | **70 %**    | ████████████████░ | **GIMPAY**                |
+| 6  | **65 %**    | ███████████████░░ | **GIM EXCELLENCE**        |
+| 7  | **80 %**    | █████████████████ | **SIMULATION GAMIFI**     |
+| 8  | **50 %**    | ██████████░░░░░░░ | **GIMPULSE**              |
+| 9  | **70 %**    | ████████████████░ | **GIM TRANSFORM**         |
+
+---
+
+## 3. Palette de couleurs
+
+| Couleur              | Code HEX   | RGB               | Utilisation                                  |
+|----------------------|------------|-------------------|----------------------------------------------|
+| Jaune vif            | `#FFDD00`  | rgb(255, 221, 0)  | Header, barres de progression, accents       |
+| Bleu marine foncé    | `#283478`  | rgb(40, 52, 120)  | Fond principal, cercles, fond des barres     |
+| Bleu très foncé      | `#14213D`  | rgb(20, 33, 61)   | Icônes hamburger, points du menu contextuel  |
+| Blanc                | `#FFFFFF`  | rgb(255, 255, 255)| Textes, fond du dashboard                    |
+
+---
+
+## 4. Typographie
+
+| Élément                    | Taille | Couleur | Style    |
+|----------------------------|--------|---------|----------|
+| Pourcentage global (45 %)  | 96 px  | Blanc   | Gras     |
+| Label global (Horizon 2026)| 32 px  | Blanc   | Normal   |
+| Pourcentages axes (20 %)   | 36 px  | Blanc   | Gras     |
+| Labels axes (AXE 1, 2, 3) | 16 px  | Blanc   | Normal   |
+| Pourcentages programmes    | 24 px  | Blanc   | Gras     |
+| Noms programmes            | 19 px  | Blanc   | Majuscules |
+| Titre header (GIM-HZ 2026)| 17 px  | Blanc   | Normal   |
+| Bouton (creer programme)   | 15 px  | Blanc   | Normal   |
+
+---
+
+## 5. Résumé fonctionnel
+
+L'interface est un **tableau de bord de pilotage stratégique** pour le programme 
+« GIM Horizon 2026 ». Elle s'articule autour de deux visualisations :
+
+1. **Graphique en bulles** (gauche) : affiche l'avancement global (**45 %**) 
+   et la répartition par axe stratégique (3 axes à **20 %** chacun).
+
+2. **Barres de progression** (droite) : détaille l'état d'avancement de 
+   **9 sous-programmes** avec leur pourcentage respectif, allant de **20 %** 
+   (GIM Technopole) à **80 %** (Simulation Gamifi).
+
+Le schéma de couleurs **bleu marine / jaune** renvoie à une identité 
+institutionnelle. L'en-tête propose un accès au **menu de navigation** 
+(hamburger) et un bouton d'action « **créer programme** ».
+

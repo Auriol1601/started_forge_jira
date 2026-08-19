@@ -1,6 +1,7 @@
 import React from 'react';
 import MetricCircle from './MetricCircle';
 import ProjectStatusRow from './ProjectStatusRow';
+import SummaryBar from './SummaryBar';
 
 const projects = [
     { label: 'GIM SCHEMA PAIEMENT', value: '70%' },
@@ -41,6 +42,7 @@ export default function TopPanel() {
                         </div>
                     </div>
                 </div>
+                <SummaryBar />
             </div>
         </div>
     );
