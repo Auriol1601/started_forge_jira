@@ -8,7 +8,7 @@ export default function Header() {
                 <span className="bar" />
                 <span className="bar" />
             </button>
-            <div className="brand">GIM-HZ 2026</div>
+            <button className="brand" type="button">GIM-HZ 2026</button>
             <div className="spacer" />
             <button className="create-btn" aria-label="creer programme">creer programme</button>
         </header>
