@@ -21,9 +21,12 @@ export default function MenuOption(){
             </button>
             {open && (
                 <div className="menu-dropdown">
-                    <button className="menu-item">Option 1</button>
-                    <button className="menu-item">Option 2</button>
-                    <button className="menu-item">Fermer</button>
+                    <div className="menu-header">OPTION</div>
+                    <div className="menu-body">
+                        <button className="menu-item">EXPORTER</button>
+                        <button className="menu-item">AFFICHAGE</button>
+                        <button className="menu-item">PARTAGER</button>
+                    </div>
                 </div>
             )}
         </div>

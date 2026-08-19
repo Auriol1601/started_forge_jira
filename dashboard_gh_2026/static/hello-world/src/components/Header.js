@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function Header() {
+export default function Header({ onToggleSidebar }) {
     return (
         <header className="app-header">
-            <button className="hamburger" aria-label="menu">
+            <button className="hamburger" aria-label="menu" onClick={onToggleSidebar}>
                 <span className="bar" />
                 <span className="bar" />
                 <span className="bar" />
