@@ -1,0 +1,20 @@
+modules:
+  jira:fullPage:
+    - key: dashboard-gh-2026-hello-world-full-page
+      resource: main
+      resolver:
+        function: resolver
+      title: dashboard_gh_2026
+      routePrefix: hello-world
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: static/hello-world/build
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1
