@@ -9,9 +9,14 @@ export default function ProgressItem({ label, percent }) {
     const p = parsePercent(percent);
     return (
         <div className="progress-item">
-            <div className="progress-label"><span className="pct">{percent}</span> {label}</div>
-            <div className="progress-bar">
-                <div className="bar-fill" style={{ width: `${p}%` }} />
+            <div className="progress-row">
+                <div className="pct-box">{percent}</div>
+                <div className="label-and-bar">
+                    <div className="label-box">{label}</div>
+                    <div className="progress-bar">
+                        <div className="bar-fill" style={{ width: `${p}%` }} />
+                    </div>
+                </div>
             </div>
         </div>
     );
