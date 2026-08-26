@@ -56,12 +56,9 @@ const emptyForm = {
 
 export default function ProgramPage() {
     const [programs, setPrograms] = useState(initialPrograms);
-    const [selectedId, setSelectedId] = useState(initialPrograms[0].id);
+    const [selectedId, setSelectedId] = useState(null);
     const [pendingDelete, setPendingDelete] = useState(null);
-    const [formData, setFormData] = useState({
-        ...emptyForm,
-        ...initialPrograms[0],
-    });
+    const [formData, setFormData] = useState({ ...emptyForm });
 
     const updateField = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));

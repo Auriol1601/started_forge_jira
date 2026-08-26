@@ -3,11 +3,23 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1787736067309,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787738673469,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -101,9 +101,9 @@\n                 </div>\r\n             </div>\r\n \r\n             <div className=\"field-group\">\r\n-                <label>budget conso</label>\r\n+                <label>budget consommé</label>\r\n                 <div className=\"input-shell\">\r\n                     <input\r\n                         type=\"text\"\r\n                         value={formData.budgetCons}\r\n"
+                },
+                {
+                    "date": 1787738751459,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n             </div>\r\n \r\n             <div className=\"field-row two-cols\">\r\n                 <div className=\"field-group\">\r\n-                    <label>debut</label>\r\n+                    <label>Date de début</label>\r\n                     <div className=\"input-shell input-shell-date\">\r\n                         <input\r\n                             type=\"date\"\r\n                             value={formData.startDate}\r\n@@ -63,9 +63,9 @@\n                     </div>\r\n                 </div>\r\n \r\n                 <div className=\"field-group\">\r\n-                    <label>fin</label>\r\n+                    <label>Date de fin</label>\r\n                     <div className=\"input-shell input-shell-date\">\r\n                         <input\r\n                             type=\"date\"\r\n                             value={formData.endDate}\r\n"
+                },
+                {
+                    "date": 1787738850216,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,9 +38,9 @@\n                     />\r\n                 </div>\r\n             </div>\r\n \r\n-            <div className=\"field-group\">\r\n+            {/* <div className=\"field-group\">\r\n                 <label>sponsor auto</label>\r\n                 <div className=\"input-shell\">\r\n                     <input\r\n                         type=\"text\"\r\n@@ -48,9 +48,9 @@\n                         onChange={(e) => onChange('sponsorAuto', e.target.value)}\r\n                         placeholder=\"SPONSOR AUTO\"\r\n                     />\r\n                 </div>\r\n-            </div>\r\n+            </div> */}\r\n \r\n             <div className=\"field-row two-cols\">\r\n                 <div className=\"field-group\">\r\n                     <label>Date de début</label>\r\n"
                 }
             ],
             "date": 1787736067309,

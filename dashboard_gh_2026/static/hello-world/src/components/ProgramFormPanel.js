@@ -39,7 +39,7 @@ export default function ProgramFormPanel({ formData, onChange, onSubmit }) {
                 </div>
             </div>
 
-            <div className="field-group">
+            {/* <div className="field-group">
                 <label>sponsor auto</label>
                 <div className="input-shell">
                     <input
@@ -49,11 +49,11 @@ export default function ProgramFormPanel({ formData, onChange, onSubmit }) {
                         placeholder="SPONSOR AUTO"
                     />
                 </div>
-            </div>
+            </div> */}
 
             <div className="field-row two-cols">
                 <div className="field-group">
-                    <label>debut</label>
+                    <label>Date de début</label>
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
@@ -64,7 +64,7 @@ export default function ProgramFormPanel({ formData, onChange, onSubmit }) {
                 </div>
 
                 <div className="field-group">
-                    <label>fin</label>
+                    <label>Date de fin</label>
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
@@ -102,7 +102,7 @@ export default function ProgramFormPanel({ formData, onChange, onSubmit }) {
             </div>
 
             <div className="field-group">
-                <label>budget conso</label>
+                <label>budget consommé</label>
                 <div className="input-shell">
                     <input
                         type="text"
