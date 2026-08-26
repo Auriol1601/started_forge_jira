@@ -26,7 +26,12 @@ function App(){
                 onGoHome={goHome}
                 onCreateProgram={goToProgramPage}
             />
-            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+            <Sidebar
+                open={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+                onGoHome={goHome}
+                onOpenProgramPage={goToProgramPage}
+            />
             {currentView === 'program' ? <ProgramPage /> : <Dashboard />}
         </div>
     );

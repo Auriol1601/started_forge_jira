@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1787157663433,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787739041840,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n             <aside className=\"sidebar-panel\" role=\"dialog\" aria-label=\"menu\">\r\n                 <div className=\"sidebar-header\">MENU</div>\r\n                 <div className=\"sidebar-body\">\r\n                     <button className=\"side-item\">gestions des programmes</button>\r\n-                    <button className=\"side-item\">dashboard GIM-HORIZON 26</button>\r\n+                    <button className=\"side-item\">dashboard GIM-HORIZON 2026</button>\r\n                 </div>\r\n                 <div className=\"sidebar-footer\">\r\n                     <button className=\"side-logout\">Se déconnecter</button>\r\n                 </div>\r\n"
+                },
+                {
+                    "date": 1787739077096,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React, { useEffect } from 'react';\r\n \r\n-export default function Sidebar({ open, onClose }){\r\n+export default function Sidebar({ open, onClose, onGoHome, onOpenProgramPage }){\r\n     useEffect(()=>{\r\n         function onKey(e){ if(e.key==='Escape') onClose(); }\r\n         if(open) document.addEventListener('keydown', onKey);\r\n         return ()=>document.removeEventListener('keydown', onKey);\r\n@@ -12,10 +12,20 @@\n             <div className=\"sidebar-backdrop\" onClick={onClose} />\r\n             <aside className=\"sidebar-panel\" role=\"dialog\" aria-label=\"menu\">\r\n                 <div className=\"sidebar-header\">MENU</div>\r\n                 <div className=\"sidebar-body\">\r\n-                    <button className=\"side-item\">gestions des programmes</button>\r\n-                    <button className=\"side-item\">dashboard GIM-HORIZON 2026</button>\r\n+                    <button className=\"side-item\" onClick={() => {\r\n+                        onOpenProgramPage();\r\n+                        onClose();\r\n+                    }}>\r\n+                        gestions des programmes\r\n+                    </button>\r\n+                    <button className=\"side-item\" onClick={() => {\r\n+                        onGoHome();\r\n+                        onClose();\r\n+                    }}>\r\n+                        dashboard GIM-HORIZON 2026\r\n+                    </button>\r\n                 </div>\r\n                 <div className=\"sidebar-footer\">\r\n                     <button className=\"side-logout\">Se déconnecter</button>\r\n                 </div>\r\n"
                 }
             ],
             "date": 1787157663433,
