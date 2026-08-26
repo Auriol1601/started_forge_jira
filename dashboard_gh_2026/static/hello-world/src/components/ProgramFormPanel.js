@@ -1,16 +1,25 @@
 import React from 'react';
 
-export default function ProgramFormPanel({ formData, onChange, onSubmit }) {
+export default function ProgramFormPanel({ formData, categories, onChange, onSubmit }) {
     return (
         <aside className="program-form-panel">
             <div className="field-group field-group-wide">
                 <label>selectionner / axe strategique</label>
                 <div className="input-shell input-shell-select">
-                    <select value={formData.axle} onChange={(e) => onChange('axle', e.target.value)}>
-                        <option value="AXE STRATEGIQUE">AXE STRATEGIQUE</option>
-                        <option value="AXE 1">AXE 1</option>
-                        <option value="AXE 2">AXE 2</option>
-                        <option value="AXE 3">AXE 3</option>
+                    <select
+                        value={formData.axle}
+                        onChange={(e) => onChange('axle', e.target.value)}
+                    >
+                        <option value="">Sélectionner un axe stratégique</option>
+
+                        {categories.map((category) => (
+                            <option
+                                key={category.id}
+                                value={category.id}
+                            >
+                                {category.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>

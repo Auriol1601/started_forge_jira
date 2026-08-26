@@ -43,7 +43,7 @@ const initialPrograms = [
 ];
 
 const emptyForm = {
-    axle: 'AXE STRATEGIQUE',
+    axle: '',
     name: '',
     sponsor: '',
     sponsorAuto: '',
@@ -64,9 +64,17 @@ export default function ProgramPage() {
             try {
                 const result = await invoke('getProjectCategories');
 
-                console.log('Catégories Jira :', result);
+                console.log('Catégories Jira retournées :', result);
+                console.log('Nombre de catégories Jira :', result.length);
 
                 setCategories(result);
+
+                if (result.length > 0) {
+                    setFormData((prev) => ({
+                        ...prev,
+                        axle: prev.axle || result[0].id,
+                    }));
+                }
             } catch (error) {
                 console.error(
                     'Erreur récupération catégories Jira :',
@@ -138,7 +146,12 @@ export default function ProgramPage() {
 
     return (
         <main className="program-page-shell">
-            <ProgramFormPanel formData={formData} onChange={updateField} onSubmit={handleSubmit} />
+            <ProgramFormPanel
+                formData={formData}
+                categories={categories}
+                onChange={updateField}
+                onSubmit={handleSubmit}
+            />
             <ProgramTablePanel
                 programs={programs}
                 selectedId={selectedId}
