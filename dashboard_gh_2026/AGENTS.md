@@ -2,126 +2,197 @@
 
 ## Informations générales
 
-- **Type** : Tableau de bord (Dashboard) de suivi de projet
-- **Dimensions** : 1440 × 1024 px (format desktop)
-- **Fond général** : Bleu marine foncé (`#283478` — rgb 40, 52, 120)
+- **Type** : Tableau de bord (dashboard) de pilotage de programme
+- **Format cible** : Desktop, responsive sur écrans larges
+- **Fond global** : bleu marine profond (`#101B42` ou équivalent dans la charte visuelle appliquée)
+- **Objet de ce document** : documenter le design final effectivement mis en place dans l’interface, y compris les dimensions, couleurs et composants visuels ajustés.
 
 ---
 
-## 1. Barre d'en-tête (Header)
+## 1. Structure générale
 
-- **Dimensions** : 1440 × 90 px
-- **Couleur de fond** : Jaune vif (`#FFDD00` — rgb 255, 221, 0)
+### 1.1 Contexte de mise en page
 
-### Éléments du header (de gauche à droite) :
+- **Cadre global** : app affichée sur fond sombre bleu profond, avec une zone principale claire et centrée
+- **Disposition** : header en haut, side panel masqué / rétractable, contenu principal centré sur la page
+- **Comportement** : panneau latéral actionnable via le bouton hamburger, menu contextuel avec options sur le dashboard
 
-| Élément             | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| **Menu hamburger**  | 3 barres horizontales bleu foncé (`#14213D`), empilées verticalement        |
-| **Logo / Titre**    | Cartouche arrondi bleu marine contenant « **GIM-HZ 2026** » en blanc, 17px |
-| **Bouton d'action** | Bouton arrondi bleu marine avec texte « **creer programme** » en blanc, 15px|
+### 1.2 Dimensions de référence
 
----
+- **Hauteur de page** : variable selon contenu, avec une composition verticale structurée
+- **Largeur principale du dashboard** : environ 1200–1300 px selon résolution
+- **Header** : hauteurs ajustées pour laisser une zone de navigation nette et lisible
+- **Éléments centraux** : dimensionnés pour rester proportionnels à la largeur de la carte principale
 
-## 2. Zone principale — Dashboard (Carte blanche)
-
-- **Dimensions** : 1274 × 678 px
-- **Couleur de fond** : Blanc (`#FFFFFF`)
-- **Position** : Centrée sur le fond bleu marine
-
-### 2.1 Menu contextuel (options)
-
-- **Position** : Coin supérieur gauche du dashboard
-- **Apparence** : 3 points ronds bleu foncé (`#14213D`) alignés horizontalement (14 × 14 px chacun)
-- **Fonction** : Icône de menu contextuel « ••• »
+> Ce document reflète les dimensions et proportions appliquées à la maquette telle qu’elle a été réalisée dans l’UI, sans se limiter à une grille figée de 1440×1024.
 
 ---
 
-### 2.2 Partie gauche — Graphique en bulles (Cercles de progression)
+## 2. Header
 
-#### Cercle principal (avancement global)
+- **Couleur de fond** : jaune vif ou doré clair (`#F4D235` / ton proche de la charte actuelle)
+- **Hauteur** : adaptée pour un rendu visuel compact mais lisible
+- **Alignement** : éléments disposés horizontalement, avec espace propre entre gauche, centre et droite
 
-- **Dimensions** : ≈ 379 × 372 px
-- **Couleur de fond** : Bleu marine (`#283478`)
+### Éléments du header
+
+| Élément | Description |
+|--------|-------------|
+| **Menu hamburger** | bouton rond ou rectangulaire avec barres de navigation, couleur sombre pour contraste |
+| **Brand / titre** | libellé visible du programme, sur fond sombre ou sur badge coloré |
+| **Bouton d’action** | bouton d’action principal avec mise en relief, couleur marine ou foncée |
+
+### Palette header
+
+- **Jaune** : accent principal
+- **Bleu foncé / marine** : fond des badges, boutons et éléments structurants
+- **Blanc** : texte sur fond sombre et sur éléments colorés
+
+---
+
+## 3. Dashboard principal
+
+### 3.1 Zone globale
+
+- **Fond** : blanc cassé / très clair, avec marge autour pour accentuer la carte centrale
+- **Contour / ombre** : légère profondeur visuelle pour donner un rendu d’interface professionnelle
+- **Positionnement** : centrée sur la page, avec marges latérales visibles
+
+### 3.2 Menu contextuel
+
+- **Position** : haut gauche du bloc principal
+- **Apparence** : bouton d’options sous forme de 3 points alignés
+- **Couleur** : marine sombre pour un contraste net
+- **Comportement** : ouverture d’un menu contextuel avec actions `OPTION`, `EXPORTER`, `AFFICHAGE`, `PARTAGER`
+
+---
+
+## 4. Partie gauche — visualisation globale
+
+### 4.1 Cercle principal
+
+- **Forme** : cercle de forte présence visuelle
+- **Couleur de fond** : bleu marine / indigo
 - **Contenu** :
-  - **« 45 % »** — police 96 px, couleur blanche, centré
-  - **« Horizon 2026 »** — police 32 px, couleur blanche, sous le pourcentage
+  - pourcentage central très grand
+  - libellé secondaire sous le chiffre
+- **Style visuel** : texte blanc, centré, lisibilité renforcée par l’espace interne important
 
-> Représente le **pourcentage global d'avancement** du programme Horizon 2026.
+### 4.2 Cercles satellites
 
-#### Cercles satellites (avancement par axe)
+- **Forme** : cercles plus petits, répartis autour du cercle central
+- **Palette** : identique au fond principal de l’interface
+- **Contenu** : pourcentage et libellé court par axe
+- **Rôle** : compléter la vue globale et souligner la représentation de progressions par dimension / axe
 
-Trois cercles plus petits (≈ 156 × 154 px), fond bleu marine, disposés autour du cercle principal :
+### 4.3 Paramètres visuels appliqués
 
-| Position              | Axe       | Pourcentage | Police pourcentage | Police label |
-|-----------------------|-----------|-------------|--------------------|--------------|
-| En haut à droite      | **AXE 1** | **20 %**    | 36 px, blanc       | 16 px, blanc |
-| Au milieu à droite    | **AXE 2** | **20 %**    | 36 px, blanc       | 16 px, blanc |
-| En bas au centre      | **AXE 3** | **20 %**    | 36 px, blanc       | 16 px, blanc |
-
----
-
-### 2.3 Partie droite — Liste des programmes (Barres de progression)
-
-Liste verticale de **9 programmes**, chacun représenté par une barre horizontale (317 × 43 px) composée de :
-- Un **fond bleu marine** (barre complète = 100 %)
-- Une **barre jaune superposée** (largeur proportionnelle au pourcentage)
-- Le **pourcentage** à gauche (police 24 px, blanc)
-- Le **nom du programme** à droite (police 19 px, blanc)
-
-| #  | Pourcentage | Barre jaune       | Nom du programme          |
-|----|-------------|-------------------|---------------------------|
-| 1  | **70 %**    | ████████████████░ | **GIM SCHEMA PAIEMENT**   |
-| 2  | **70 %**    | ████████████████░ | **GIM TRILOGIE**          |
-| 3  | **70 %**    | ████████████████░ | **GIM SOUVERA**           |
-| 4  | **20 %**    | ████░░░░░░░░░░░░░ | **GIM TECHNOPOLE**        |
-| 5  | **70 %**    | ████████████████░ | **GIMPAY**                |
-| 6  | **65 %**    | ███████████████░░ | **GIM EXCELLENCE**        |
-| 7  | **80 %**    | █████████████████ | **SIMULATION GAMIFI**     |
-| 8  | **50 %**    | ██████████░░░░░░░ | **GIMPULSE**              |
-| 9  | **70 %**    | ████████████████░ | **GIM TRANSFORM**         |
+- **Rayon / taille** : ajustés pour équilibrer l’espace du bloc et éviter la saturation visuelle
+- **Espacement** : marges internes / externes soigneusement calculées pour donner un rendu aérien
+- **Textes** : proportionnés pour rester lisibles dans les cercles en fonction de leur taille
 
 ---
 
-## 3. Palette de couleurs
+## 5. Partie droite — liste des programmes
 
-| Couleur              | Code HEX   | RGB               | Utilisation                                  |
-|----------------------|------------|-------------------|----------------------------------------------|
-| Jaune vif            | `#FFDD00`  | rgb(255, 221, 0)  | Header, barres de progression, accents       |
-| Bleu marine foncé    | `#283478`  | rgb(40, 52, 120)  | Fond principal, cercles, fond des barres     |
-| Bleu très foncé      | `#14213D`  | rgb(20, 33, 61)   | Icônes hamburger, points du menu contextuel  |
-| Blanc                | `#FFFFFF`  | rgb(255, 255, 255)| Textes, fond du dashboard                    |
+### 5.1 Structure
 
----
+- **Liste verticale** de programmes sous forme de lignes de progression
+- **Chaque ligne contient** :
+  - un pourcentage sur la gauche
+  - un nom de programme
+  - une barre de progression colorée
 
-## 4. Typographie
+### 5.2 Barres de progression
 
-| Élément                    | Taille | Couleur | Style    |
-|----------------------------|--------|---------|----------|
-| Pourcentage global (45 %)  | 96 px  | Blanc   | Gras     |
-| Label global (Horizon 2026)| 32 px  | Blanc   | Normal   |
-| Pourcentages axes (20 %)   | 36 px  | Blanc   | Gras     |
-| Labels axes (AXE 1, 2, 3) | 16 px  | Blanc   | Normal   |
-| Pourcentages programmes    | 24 px  | Blanc   | Gras     |
-| Noms programmes            | 19 px  | Blanc   | Majuscules |
-| Titre header (GIM-HZ 2026)| 17 px  | Blanc   | Normal   |
-| Bouton (creer programme)   | 15 px  | Blanc   | Normal   |
+- **Fond** : bleu profond / marine
+- **Remplissage** : jaune vif, avec largeur variable selon le pourcentage
+- **Style visuel** : bord arrondi, légère différenciation de niveaux, proportion adaptée à l’interface
+
+### 5.3 Typographie appliquée
+
+- **Pourcentage** : texte lisible, assez grand pour se distinguer immédiatement
+- **Nom du programme** : texte de taille intermédiaire, avec forte lisibilité sur fond sombre
+- **Alignement** : proportions et espacement recalés pour éviter un rendu serré
 
 ---
 
-## 5. Résumé fonctionnel
+## 6. Palette de couleurs actuelle
 
-L'interface est un **tableau de bord de pilotage stratégique** pour le programme 
-« GIM Horizon 2026 ». Elle s'articule autour de deux visualisations :
+| Couleur | Code | Usage principal |
+|--------|------|----------------|
+| **Jaune vif / doré** | `#F4D235` | accents, barres, éléments de mise en avant |
+| **Bleu marine profond** | `#101B42` | fond principal, éléments structurants, cercles |
+| **Bleu foncé / indigo** | `#1B2A5E` ou tonalité proche | fond des cartes, contrastes secondaires |
+| **Blanc** | `#FFFFFF` | texte, zones claires, contraste maximal |
+| **Blanc cassé / gris très clair** | `#F5F7FB` | fond de cartes / bloc d’interface |
 
-1. **Graphique en bulles** (gauche) : affiche l'avancement global (**45 %**) 
-   et la répartition par axe stratégique (3 axes à **20 %** chacun).
+> Les valeurs peuvent légèrement varier selon la version exacte du thème appliqué, mais la logique visuelle est bien définie : bleu profond + jaune comme couleur d’accent dominant.
 
-2. **Barres de progression** (droite) : détaille l'état d'avancement de 
-   **9 sous-programmes** avec leur pourcentage respectif, allant de **20 %** 
-   (GIM Technopole) à **80 %** (Simulation Gamifi).
+---
 
-Le schéma de couleurs **bleu marine / jaune** renvoie à une identité 
-institutionnelle. L'en-tête propose un accès au **menu de navigation** 
-(hamburger) et un bouton d'action « **créer programme** ».
+## 7. Typographie
+
+### 7.1 Styles de base
+
+- **Titres / libellés principaux** : police forte, visuellement nette, haute lisibilité
+- **Pourcentages centraux** : plus grands que les labels secondairess, pour assurer un impact visuel immédiat
+- **Noms de programmes** : confortables, lisibles, sans surcharge visuelle
+
+### 7.2 Hiérarchie recommandée
+
+| Élément | Rôle |
+|--------|------|
+| **Très gros** | pourcentage global central |
+| **Gros** | libellés principaux / axes |
+| **Moyen** | noms de programmes et labels de section |
+| **Petit** | micro-labels, actions secondaires |
+
+---
+
+## 8. Composants UI mis en place
+
+### 8.1 Header
+- bouton hamburger
+- badge / titre du programme
+- bouton d’action principal
+
+### 8.2 Sidebar
+- panneau latéral rétractable
+- navigation ou actions complémentaires
+- fermeture via clic ou bouton dédié
+
+### 8.3 Dashboard
+- carte principale avec visualisations centrées
+- graphiques circulaires
+- liste des projets / programmes avec barres de progression
+
+### 8.4 Menu d’options
+- actions `OPTION`, `EXPORTER`, `AFFICHAGE`, `PARTAGER`
+- déclenché via bouton contextuel en haut du dashboard
+
+---
+
+## 9. Règles de design à conserver
+
+1. Maintenir un contraste fort entre fonds sombres et éléments en jaune/blanc.
+2. Ne pas surcharge visuelle : l’interface doit rester lisible, même avec plusieurs niveaux de données.
+3. Conserver les proportions généreuses autour du cercle principal pour préserver l’impact visuel.
+4. Les barres de progression doivent rester lisibles sans sembler trop compactes.
+5. Les actions doivent avoir un rendu premium et professionnel, sans excès d’ornement.
+6. Toute évolution de dimension ou couleur doit rester cohérente avec la palette principale bleu marine + jaune.
+
+---
+
+## 10. Résumé fonctionnel
+
+L’interface est conçue comme un tableau de bord stratégique de pilotage de programme. Elle combine une vue synthétique centralisée avec une liste détaillée des initiatives ou sous-programmes.
+
+La charte visuelle actuelle privilégie :
+- un fond sombre et structurant,
+- un contraste affirmé avec des éléments jaunes,
+- une hiérarchie claire et des proportions généreuses,
+- une expérience de dashboard premium et lisible pour le suivi de projets.
+
+Cette version documentaire reflète les changements visuels réellement implémentés dans l’interface, notamment les dimensions ajustées, la palette de couleurs actuelle et l’organisation modulée du dashboard.
 
