@@ -12,8 +12,9 @@ const initialPrograms = [
         startDate: '03/08/2026',
         endDate: '04/08/2026',
         axle: 'AXE 1',
+        responsable: '',
         sponsor: 'Ministère',
-        sponsorAuto: 'AUTO',
+        typeJira: '',
         description: 'Description ......',
     },
     {
@@ -24,8 +25,9 @@ const initialPrograms = [
         startDate: '05/08/2026',
         endDate: '12/08/2026',
         axle: 'AXE 2',
+        responsable: '',
         sponsor: 'Direction',
-        sponsorAuto: 'AUTO',
+        typeJira: '',
         description: 'Description ......',
     },
     {
@@ -36,8 +38,9 @@ const initialPrograms = [
         startDate: '01/07/2026',
         endDate: '15/07/2026',
         axle: 'AXE 3',
+        responsable: '',
         sponsor: 'Coordination',
-        sponsorAuto: 'AUTO',
+        typeJira: '',
         description: 'Description ......',
     },
 ];
@@ -45,8 +48,9 @@ const initialPrograms = [
 const emptyForm = {
     axle: '',
     name: '',
+    responsable: '',
     sponsor: '',
-    sponsorAuto: '',
+    typeJira: '',
     startDate: '',
     endDate: '',
     status: 'EN COURS',
@@ -58,14 +62,37 @@ const emptyForm = {
 export default function ProgramPage() {
 
     const [categories, setCategories] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [programs, setPrograms] = useState(initialPrograms);
+    const [selectedId, setSelectedId] = useState(null);
+    const [pendingDelete, setPendingDelete] = useState(null);
+    const [formData, setFormData] = useState({ ...emptyForm });
+
+    useEffect(() => {
+        const loadUsers = async () => {
+            console.log('[FRONT] Recherche des responsables Jira démarrée');
+
+            try {
+                const { invoke } = await import('@forge/bridge');
+                const result = await invoke('searchUsers', { query: 'pulseone' });
+
+                console.log('[FRONT] Responsables Jira retournés :', result);
+                setUsers(Array.isArray(result) ? result : []);
+            } catch (error) {
+                console.error('[FRONT] Erreur recherche utilisateurs Jira :', error);
+            }
+        };
+
+        loadUsers();
+    }, []);
 
     useEffect(() => {
         const loadCategories = async () => {
             try {
                 const result = await invoke('getProjectCategories');
 
-                console.log('Catégories Jira retournées :', result);
-                console.log('Nombre de catégories Jira :', result.length);
+                console.log('[FRONT] Catégories Jira retournées :', result);
+                console.log('[FRONT] Nombre de catégories Jira :', result.length);
 
                 setCategories(result);
 
@@ -77,7 +104,7 @@ export default function ProgramPage() {
                 }
             } catch (error) {
                 console.error(
-                    'Erreur récupération catégories Jira :',
+                    '[FRONT] Erreur récupération catégories Jira :',
                     error
                 );
             }
@@ -86,10 +113,6 @@ export default function ProgramPage() {
         loadCategories();
     }, []);
 
-    const [programs, setPrograms] = useState(initialPrograms);
-    const [selectedId, setSelectedId] = useState(null);
-    const [pendingDelete, setPendingDelete] = useState(null);
-    const [formData, setFormData] = useState({ ...emptyForm });
 
     const updateField = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -115,8 +138,9 @@ export default function ProgramPage() {
             startDate: formData.startDate || '00/00/0000',
             endDate: formData.endDate || '00/00/0000',
             axle: formData.axle,
+            responsable: formData.responsable,
             sponsor: formData.sponsor,
-            sponsorAuto: formData.sponsorAuto,
+            typeJira: formData.typeJira,
             description: formData.description,
         };
 
@@ -149,6 +173,7 @@ export default function ProgramPage() {
             <ProgramFormPanel
                 formData={formData}
                 categories={categories}
+                users={users}
                 onChange={updateField}
                 onSubmit={handleSubmit}
             />

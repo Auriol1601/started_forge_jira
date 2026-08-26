@@ -18,6 +18,7 @@ resources:
 permissions:
   scopes:
     - read:jira-work
+    - read:jira-user
 
 app:
   runtime:

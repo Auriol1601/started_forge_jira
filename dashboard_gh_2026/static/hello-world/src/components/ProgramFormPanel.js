@@ -1,10 +1,10 @@
 import React from 'react';
 
-export default function ProgramFormPanel({ formData, categories, onChange, onSubmit }) {
+export default function ProgramFormPanel({ formData, categories, users, onChange, onSubmit }) {
     return (
         <aside className="program-form-panel">
             <div className="field-group field-group-wide">
-                <label>selectionner / axe strategique</label>
+                <label>Axe stratégique</label>
                 <div className="input-shell input-shell-select">
                     <select
                         value={formData.axle}
@@ -25,44 +25,61 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
             </div>
 
             <div className="field-group">
-                <label>nom du programme</label>
+                <label>Nom du programme</label>
                 <div className="input-shell">
                     <input
                         type="text"
                         value={formData.name}
                         onChange={(e) => onChange('name', e.target.value)}
-                        placeholder="NOM DU PROGRAMME"
+                        placeholder="Nom du programme"
                     />
                 </div>
             </div>
 
             <div className="field-group">
-                <label>nom du sponsor</label>
+                <label>Responsable</label>
+                <div className="input-shell input-shell-select">
+                    <select
+                        value={formData.responsable}
+                        onChange={(e) => onChange('responsable', e.target.value)}
+                    >
+                        <option value="">Sélectionner un responsable</option>
+                        {users.map((user) => (
+                            <option key={user.accountId} value={user.accountId}>
+                                {user.displayName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            <div className="field-group">
+                <label>Nom du sponsor</label>
                 <div className="input-shell">
                     <input
                         type="text"
                         value={formData.sponsor}
                         onChange={(e) => onChange('sponsor', e.target.value)}
-                        placeholder="NOM DU SPONSOR"
+                        placeholder="Nom du sponsor"
                     />
                 </div>
             </div>
 
-            {/* <div className="field-group">
-                <label>sponsor auto</label>
+            <div className="field-group">
+                <label>Type Jira</label>
                 <div className="input-shell">
                     <input
                         type="text"
-                        value={formData.sponsorAuto}
-                        onChange={(e) => onChange('sponsorAuto', e.target.value)}
-                        placeholder="SPONSOR AUTO"
+                        value={formData.typeJira}
+                        onChange={(e) => onChange('typeJira', e.target.value)}
+                        placeholder="Type Jira"
                     />
                 </div>
-            </div> */}
+            </div>
 
             <div className="field-row two-cols">
                 <div className="field-group">
-                    <label>Date de début</label>
+                    <label>Date début</label>
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
@@ -73,7 +90,7 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
                 </div>
 
                 <div className="field-group">
-                    <label>Date de fin</label>
+                    <label>Date fin</label>
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
@@ -86,7 +103,7 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
 
             <div className="field-row two-cols">
                 <div className="field-group">
-                    <label>status</label>
+                    <label>Status</label>
                     <div className="input-shell input-shell-select">
                         <select value={formData.status} onChange={(e) => onChange('status', e.target.value)}>
                             <option value="EN COURS">EN COURS</option>
@@ -98,7 +115,7 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
                 </div>
 
                 <div className="field-group">
-                    <label>budget</label>
+                    <label>Budget</label>
                     <div className="input-shell">
                         <input
                             type="text"
@@ -111,7 +128,7 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
             </div>
 
             <div className="field-group">
-                <label>budget consommé</label>
+                    <label>Budget consommé</label>
                 <div className="input-shell">
                     <input
                         type="text"
@@ -123,7 +140,7 @@ export default function ProgramFormPanel({ formData, categories, onChange, onSub
             </div>
 
             <div className="field-group">
-                <label>description</label>
+                    <label>Description</label>
                 <div className="input-shell textarea-shell">
                     <textarea
                         value={formData.description}
