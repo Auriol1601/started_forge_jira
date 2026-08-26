@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 8,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1787151172714,
@@ -40,6 +40,10 @@
                 {
                     "date": 1787157658154,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,16 @@\n-import React from 'react';\n+import React, { useState } from 'react';\n import Header from './components/Header';\n import Dashboard from './components/Dashboard';\n+import Sidebar from './components/Sidebar';\n import './App.css';\n \n function App(){\n+    const [sidebarOpen, setSidebarOpen] = useState(false);\n     return (\n         <div className=\"app-root\">\n-            <Header />\n+            <Header onToggleSidebar={() => setSidebarOpen(s => !s)} />\n+            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />\n             <Dashboard />\n         </div>\n     );\n }\n"
+                },
+                {
+                    "date": 1787736119004,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,17 +1,17 @@\n import React, { useState } from 'react';\n import Header from './components/Header';\n-import Dashboard from './components/Dashboard';\n import Sidebar from './components/Sidebar';\n+import ProgramPage from './components/ProgramPage';\n import './App.css';\n \n function App(){\n     const [sidebarOpen, setSidebarOpen] = useState(false);\n     return (\n         <div className=\"app-root\">\n             <Header onToggleSidebar={() => setSidebarOpen(s => !s)} />\n             <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />\n-            <Dashboard />\n+            <ProgramPage />\n         </div>\n     );\n }\n \n"
                 }
             ],
             "date": 1787151172714,

@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import ProgramFormPanel from './ProgramFormPanel';
+import ProgramTablePanel from './ProgramTablePanel';
+
+const initialPrograms = [
+    {
+        id: 1,
+        name: 'Schema paiement',
+        status: 'EN COURS',
+        budgetCons: '2000000FCFA',
+        startDate: '03/08/2026',
+        endDate: '04/08/2026',
+        axle: 'AXE 1',
+        sponsor: 'Ministère',
+        sponsorAuto: 'AUTO',
+        description: 'Description ......',
+    },
+    {
+        id: 2,
+        name: 'GIM trilogie',
+        status: 'PLANIFIE',
+        budgetCons: '1800000FCFA',
+        startDate: '05/08/2026',
+        endDate: '12/08/2026',
+        axle: 'AXE 2',
+        sponsor: 'Direction',
+        sponsorAuto: 'AUTO',
+        description: 'Description ......',
+    },
+    {
+        id: 3,
+        name: 'GIM souvera',
+        status: 'TERMINE',
+        budgetCons: '2600000FCFA',
+        startDate: '01/07/2026',
+        endDate: '15/07/2026',
+        axle: 'AXE 3',
+        sponsor: 'Coordination',
+        sponsorAuto: 'AUTO',
+        description: 'Description ......',
+    },
+];
+
+const emptyForm = {
+    axle: 'AXE STRATEGIQUE',
+    name: '',
+    sponsor: '',
+    sponsorAuto: '',
+    startDate: '',
+    endDate: '',
+    status: 'EN COURS',
+    budget: '',
+    budgetCons: '',
+    description: '',
+};
+
+export default function ProgramPage() {
+    const [programs, setPrograms] = useState(initialPrograms);
+    const [selectedId, setSelectedId] = useState(initialPrograms[0].id);
+    const [formData, setFormData] = useState({
+        ...emptyForm,
+        ...initialPrograms[0],
+    });
+
+    const updateField = (field, value) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleSelectProgram = (program) => {
+        setSelectedId(program.id);
+        setFormData({
+            ...emptyForm,
+            ...program,
+            budget: program.budgetCons || '',
+        });
+    };
+
+    const handleSubmit = () => {
+        if (!formData.name.trim()) return;
+
+        const program = {
+            id: selectedId || Date.now(),
+            name: formData.name,
+            status: formData.status,
+            budgetCons: formData.budgetCons || '0FCFA',
+            startDate: formData.startDate || '00/00/0000',
+            endDate: formData.endDate || '00/00/0000',
+            axle: formData.axle,
+            sponsor: formData.sponsor,
+            sponsorAuto: formData.sponsorAuto,
+            description: formData.description,
+        };
+
+        setPrograms((prev) => {
+            const existing = prev.some((item) => item.id === selectedId);
+            if (existing) {
+                return prev.map((item) => (item.id === selectedId ? program : item));
+            }
+            return [program, ...prev];
+        });
+
+        setSelectedId(program.id);
+    };
+
+    return (
+        <main className="program-page-shell">
+            <ProgramFormPanel formData={formData} onChange={updateField} onSubmit={handleSubmit} />
+            <ProgramTablePanel
+                programs={programs}
+                selectedId={selectedId}
+                onSelect={handleSelectProgram}
+            />
+        </main>
+    );
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
 import Sidebar from './components/Sidebar';
+import ProgramPage from './components/ProgramPage';
 import './App.css';
 
 function App(){
@@ -10,7 +10,7 @@ function App(){
         <div className="app-root">
             <Header onToggleSidebar={() => setSidebarOpen(s => !s)} />
             <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            <Dashboard />
+            <ProgramPage />
         </div>
     );
 }

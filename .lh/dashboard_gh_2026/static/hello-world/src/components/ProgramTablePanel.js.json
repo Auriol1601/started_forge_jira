@@ -1,0 +1,18 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/ProgramTablePanel.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1787736067319,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1787736067319,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nfunction StatusBadge({ status }) {\r\n    const normalized = (status || '').toUpperCase();\r\n    const variants = {\r\n        'EN COURS': 'status status-running',\r\n        'TERMINE': 'status status-done',\r\n        'PLANIFIE': 'status status-pending',\r\n        'EN RETARD': 'status status-delayed',\r\n    };\r\n\r\n    return <span className={variants[normalized] || 'status'}>{normalized}</span>;\r\n}\r\n\r\nexport default function ProgramTablePanel({ programs, selectedId, onSelect }) {\r\n    return (\r\n        <section className=\"program-table-panel\">\r\n            <div className=\"table-note\">NB: cliquez sur un programme pour le modifiez</div>\r\n            <div className=\"table-header-row\">\r\n                <span>nom du programme</span>\r\n                <span>status</span>\r\n                <span>budget conso</span>\r\n                <span>date debut</span>\r\n                <span>date fin</span>\r\n            </div>\r\n\r\n            {programs.map((program) => (\r\n                <button\r\n                    type=\"button\"\r\n                    key={program.id}\r\n                    className={selectedId === program.id ? 'table-row row-selected' : 'table-row'}\r\n                    onClick={() => onSelect(program)}\r\n                >\r\n                    <span>{program.name}</span>\r\n                    <StatusBadge status={program.status} />\r\n                    <span>{program.budgetCons}</span>\r\n                    <span>{program.startDate}</span>\r\n                    <span>{program.endDate}</span>\r\n                </button>\r\n            ))}\r\n        </section>\r\n    );\r\n}\r\n"
+        }
+    ]
+}
