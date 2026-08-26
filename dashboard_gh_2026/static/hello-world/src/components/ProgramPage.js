@@ -69,6 +69,54 @@ export default function ProgramPage() {
     const [formData, setFormData] = useState({ ...emptyForm });
 
     useEffect(() => {
+        const testProjectTemplates = async () => {
+            console.log('[FRONT] Test project templates démarré');
+
+            try {
+                const result = await invoke('getProjectTemplates');
+
+                console.log(
+                    '[FRONT] Templates Jira retournés :',
+                    result
+                );
+
+                console.table(result);
+            } catch (error) {
+                console.error(
+                    '[FRONT] Erreur récupération templates Jira :',
+                    error
+                );
+            }
+        };
+
+        testProjectTemplates();
+    }, []);
+
+    useEffect(() => {
+        const testProjectTypes = async () => {
+            console.log('[FRONT] Test project types démarré');
+
+            try {
+                const result = await invoke('getAccessibleProjectTypes');
+
+                console.log(
+                    '[FRONT] Types de projets Jira retournés :',
+                    result
+                );
+
+                console.table(result);
+            } catch (error) {
+                console.error(
+                    '[FRONT] Erreur récupération types de projets Jira :',
+                    error
+                );
+            }
+        };
+
+        testProjectTypes();
+    }, []);
+
+    useEffect(() => {
         const loadUsers = async () => {
             console.log('[FRONT] Recherche des responsables Jira démarrée');
 

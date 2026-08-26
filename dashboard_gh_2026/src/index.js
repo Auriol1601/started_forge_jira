@@ -14,6 +14,97 @@ resolver.define('getText', (req) => {
 });
 
 /**
+ * Récupère les templates de projets Jira disponibles.
+ */
+resolver.define('getProjectTemplates', async () => {
+    console.log('[getProjectTemplates] START');
+
+    const response = await api
+        .asApp()
+        .requestJira(
+            route`/rest/api/3/project-templates`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                },
+            }
+        );
+
+    console.log(
+        '[getProjectTemplates] Jira status:',
+        response.status
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error(
+            '[getProjectTemplates] Jira error:',
+            errorText
+        );
+
+        throw new Error(
+            `Impossible de récupérer les templates Jira : ${response.status} ${errorText}`
+        );
+    }
+
+    const templates = await response.json();
+
+    console.log(
+        '[getProjectTemplates] Jira templates:',
+        templates
+    );
+
+    return templates;
+});
+
+/**
+ * Vérifie les types de projets Jira accessibles
+ * à l'application/utilisateur.
+ */
+resolver.define('getAccessibleProjectTypes', async () => {
+    console.log('[getAccessibleProjectTypes] START');
+
+    const response = await api
+        .asApp()
+        .requestJira(
+            route`/rest/api/3/project/type/accessible`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                },
+            }
+        );
+
+    console.log(
+        '[getAccessibleProjectTypes] Jira status:',
+        response.status
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error(
+            '[getAccessibleProjectTypes] Jira error:',
+            errorText
+        );
+
+        throw new Error(
+            `Impossible de récupérer les types de projets Jira : ${response.status} ${errorText}`
+        );
+    }
+
+    const projectTypes = await response.json();
+
+    console.log(
+        '[getAccessibleProjectTypes] Jira project types:',
+        projectTypes
+    );
+
+    return projectTypes;
+});
+
+/**
  * Récupère les catégories de projets Jira.
  *
  * Ces catégories représentent les axes stratégiques
