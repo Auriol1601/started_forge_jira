@@ -57,6 +57,7 @@ const emptyForm = {
 export default function ProgramPage() {
     const [programs, setPrograms] = useState(initialPrograms);
     const [selectedId, setSelectedId] = useState(initialPrograms[0].id);
+    const [pendingDelete, setPendingDelete] = useState(null);
     const [formData, setFormData] = useState({
         ...emptyForm,
         ...initialPrograms[0],
@@ -102,6 +103,19 @@ export default function ProgramPage() {
         setSelectedId(program.id);
     };
 
+    const handleDeleteConfirmed = () => {
+        if (!pendingDelete) return;
+
+        setPrograms((prev) => prev.filter((item) => item.id !== pendingDelete.id));
+        setPendingDelete(null);
+
+        setSelectedId((current) => {
+            if (current !== pendingDelete.id) return current;
+            const next = programs.filter((item) => item.id !== pendingDelete.id)[0];
+            return next ? next.id : null;
+        });
+    };
+
     return (
         <main className="program-page-shell">
             <ProgramFormPanel formData={formData} onChange={updateField} onSubmit={handleSubmit} />
@@ -109,7 +123,27 @@ export default function ProgramPage() {
                 programs={programs}
                 selectedId={selectedId}
                 onSelect={handleSelectProgram}
+                onDeleteRequest={setPendingDelete}
             />
+
+            {pendingDelete && (
+                <div className="delete-modal-overlay" onClick={() => setPendingDelete(null)}>
+                    <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="delete-modal-title">Confirmation</div>
+                        <p className="delete-warning">
+                            La suppression du programme supprimera tous les projets associés. Êtes-vous sûr !!
+                        </p>
+                        <div className="delete-modal-actions">
+                            <button type="button" className="delete-modal-cancel" onClick={() => setPendingDelete(null)}>
+                                Annuler
+                            </button>
+                            <button type="button" className="delete-modal-confirm" onClick={handleDeleteConfirmed}>
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1787736067318,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787737970102,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,8 +56,9 @@\n \r\n export default function ProgramPage() {\r\n     const [programs, setPrograms] = useState(initialPrograms);\r\n     const [selectedId, setSelectedId] = useState(initialPrograms[0].id);\r\n+    const [pendingDelete, setPendingDelete] = useState(null);\r\n     const [formData, setFormData] = useState({\r\n         ...emptyForm,\r\n         ...initialPrograms[0],\r\n     });\r\n@@ -101,15 +102,48 @@\n \r\n         setSelectedId(program.id);\r\n     };\r\n \r\n+    const handleDeleteConfirmed = () => {\r\n+        if (!pendingDelete) return;\r\n+\r\n+        setPrograms((prev) => prev.filter((item) => item.id !== pendingDelete.id));\r\n+        setPendingDelete(null);\r\n+\r\n+        setSelectedId((current) => {\r\n+            if (current !== pendingDelete.id) return current;\r\n+            const next = programs.filter((item) => item.id !== pendingDelete.id)[0];\r\n+            return next ? next.id : null;\r\n+        });\r\n+    };\r\n+\r\n     return (\r\n         <main className=\"program-page-shell\">\r\n             <ProgramFormPanel formData={formData} onChange={updateField} onSubmit={handleSubmit} />\r\n             <ProgramTablePanel\r\n                 programs={programs}\r\n                 selectedId={selectedId}\r\n                 onSelect={handleSelectProgram}\r\n+                onDeleteRequest={setPendingDelete}\r\n             />\r\n+\r\n+            {pendingDelete && (\r\n+                <div className=\"delete-modal-overlay\" onClick={() => setPendingDelete(null)}>\r\n+                    <div className=\"delete-modal\" onClick={(e) => e.stopPropagation()}>\r\n+                        <div className=\"delete-modal-title\">Confirmation</div>\r\n+                        <p className=\"delete-warning\">\r\n+                            La suppression du programme supprimera tous les projets associés. Êtes-vous sûr !!\r\n+                        </p>\r\n+                        <div className=\"delete-modal-actions\">\r\n+                            <button type=\"button\" className=\"delete-modal-cancel\" onClick={() => setPendingDelete(null)}>\r\n+                                Annuler\r\n+                            </button>\r\n+                            <button type=\"button\" className=\"delete-modal-confirm\" onClick={handleDeleteConfirmed}>\r\n+                                Supprimer\r\n+                            </button>\r\n+                        </div>\r\n+                    </div>\r\n+                </div>\r\n+            )}\r\n         </main>\r\n     );\r\n }\r\n"
                 }
             ],
             "date": 1787736067318,
