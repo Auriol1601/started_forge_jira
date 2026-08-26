@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProgramFormPanel from './ProgramFormPanel';
 import ProgramTablePanel from './ProgramTablePanel';
 
@@ -55,6 +55,29 @@ const emptyForm = {
 };
 
 export default function ProgramPage() {
+
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const { invoke } = await import('@forge/bridge');
+                const result = await invoke('getProjectCategories');
+                const jiraCategories = Array.isArray(result) ? result : [];
+
+                console.log('Catégories Jira retournées :', jiraCategories);
+                console.log('Nombre de catégories Jira :', jiraCategories.length);
+                console.table(jiraCategories);
+
+                setCategories(jiraCategories);
+            } catch (error) {
+                console.warn('Catégories Jira indisponibles hors du contexte Jira :', error);
+            }
+        };
+
+        loadCategories();
+    }, []);
+
     const [programs, setPrograms] = useState(initialPrograms);
     const [selectedId, setSelectedId] = useState(null);
     const [pendingDelete, setPendingDelete] = useState(null);
