@@ -12,6 +12,82 @@ resolver.define('getText', (req) => {
 
     return 'Hello world!';
 });
+/**
+ * Test creer un projet jira .
+ */
+
+resolver.define('createTestProject', async () => {
+    console.log('[createTestProject] START');
+
+    const projectName = 'TEST - Forge GIM';
+    const projectKey = 'FGIM';
+
+    const payload = {
+        key: projectKey,
+        name: projectName,
+        description: 'Projet de test créé depuis notre interface Forge',
+        projectTypeKey: 'software',
+
+        // Scrum
+        projectTemplateKey:
+            'com.pyxis.greenhopper.jira:gh-scrum-template',
+
+        // Axe 1
+        categoryId: 10000,
+
+        // Responsable testé précédemment
+        leadAccountId:
+            '712020:07db525b-b6f0-409b-9af1-ceaef6ddc438',
+
+        assigneeType: 'PROJECT_LEAD',
+    };
+
+    console.log(
+        '[createTestProject] Payload Jira:',
+        payload
+    );
+
+    const response = await api
+        .asApp()
+        .requestJira(
+            route`/rest/api/3/project`,
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+
+    console.log(
+        '[createTestProject] Jira status:',
+        response.status
+    );
+
+    const responseText = await response.text();
+
+    console.log(
+        '[createTestProject] Jira response:',
+        responseText
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Création du projet Jira impossible : ${response.status} ${responseText}`
+        );
+    }
+
+    const project = JSON.parse(responseText);
+
+    console.log(
+        '[createTestProject] Projet créé:',
+        project
+    );
+
+    return project;
+});
 
 /**
  * Test d'autorisation compte jira associez pour creer un projet .

@@ -67,7 +67,33 @@ export default function ProgramPage() {
     const [selectedId, setSelectedId] = useState(null);
     const [pendingDelete, setPendingDelete] = useState(null);
     const [formData, setFormData] = useState({ ...emptyForm });
+    
+    useEffect(() => {
+        const testCreateProject = async () => {
+            console.log(
+                '[FRONT] Test création projet Jira démarré'
+            );
 
+            try {
+                const result = await invoke(
+                    'createTestProject'
+                );
+
+                console.log(
+                    '[FRONT] Projet Jira créé :',
+                    result
+                );
+
+            } catch (error) {
+                console.error(
+                    '[FRONT] Erreur création projet Jira :',
+                    error
+                );
+            }
+        };
+
+        testCreateProject();
+    }, []);
 
     useEffect(() => {
         const testProjectCreationPermission = async () => {
@@ -94,7 +120,7 @@ export default function ProgramPage() {
 
         testProjectCreationPermission();
     }, []);
-    
+
     useEffect(() => {
         const testProjectTemplates = async () => {
             console.log('[FRONT] Test project templates démarré');
