@@ -1,0 +1,22 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/ProjectStatusRow.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1787155039491,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787155933983,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,13 +8,11 @@\n     const pct = parsePercent(value);\r\n     return (\r\n         <div className=\"project-row\">\r\n             <div className=\"badge\">{value}</div>\r\n-            <div className=\"project-tag\">\r\n+            <div className=\"tag-bar\">\r\n+                <div className=\"tag-fill\" style={{ width: `${pct}%` }} />\r\n                 <div className=\"tag-label\">{label}</div>\r\n-                <div className=\"tag-bar\">\r\n-                    <div className=\"tag-fill\" style={{ width: `${pct}%` }} />\r\n-                </div>\r\n             </div>\r\n         </div>\r\n     );\r\n }\r\n"
+                }
+            ],
+            "date": 1787155039491,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nfunction parsePercent(p){\r\n    return String(p || '').replace('%','');\r\n}\r\n\r\nexport default function ProjectStatusRow({ label, value }){\r\n    const pct = parsePercent(value);\r\n    return (\r\n        <div className=\"project-row\">\r\n            <div className=\"badge\">{value}</div>\r\n            <div className=\"project-tag\">\r\n                <div className=\"tag-label\">{label}</div>\r\n                <div className=\"tag-bar\">\r\n                    <div className=\"tag-fill\" style={{ width: `${pct}%` }} />\r\n                </div>\r\n            </div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/Header.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1787153700988,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787155461174,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,11 +2,11 @@\n \r\n export default function Header() {\r\n     return (\r\n         <header className=\"app-header\">\r\n-            <div className=\"hamburger\">☰</div>\r\n+            <button className=\"hamburger\" aria-label=\"menu\">☰</button>\r\n             <div className=\"brand\">GIM-HZ 2026</div>\r\n             <div className=\"spacer\" />\r\n-            <button className=\"primary-btn\">creer programme</button>\r\n+            <button className=\"create-btn\" aria-label=\"creer programme\">creer programme</button>\r\n         </header>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787155542833,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,13 @@\n \r\n export default function Header() {\r\n     return (\r\n         <header className=\"app-header\">\r\n-            <button className=\"hamburger\" aria-label=\"menu\">☰</button>\r\n+            <button className=\"hamburger\" aria-label=\"menu\">\r\n+                <span className=\"bar\" />\r\n+                <span className=\"bar\" />\r\n+                <span className=\"bar\" />\r\n+            </button>\r\n             <div className=\"brand\">GIM-HZ 2026</div>\r\n             <div className=\"spacer\" />\r\n             <button className=\"create-btn\" aria-label=\"creer programme\">creer programme</button>\r\n         </header>\r\n"
+                },
+                {
+                    "date": 1787157461676,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n                 <span className=\"bar\" />\r\n                 <span className=\"bar\" />\r\n                 <span className=\"bar\" />\r\n             </button>\r\n-            <div className=\"brand\">GIM-HZ 2026</div>\r\n+            <button className=\"brand\" type=\"button\">GIM-HZ 2026</button>\r\n             <div className=\"spacer\" />\r\n             <button className=\"create-btn\" aria-label=\"creer programme\">creer programme</button>\r\n         </header>\r\n     );\r\n"
+                },
+                {
+                    "date": 1787157667140,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n import React from 'react';\r\n \r\n-export default function Header() {\r\n+export default function Header({ onToggleSidebar }) {\r\n     return (\r\n         <header className=\"app-header\">\r\n-            <button className=\"hamburger\" aria-label=\"menu\">\r\n+            <button className=\"hamburger\" aria-label=\"menu\" onClick={onToggleSidebar}>\r\n                 <span className=\"bar\" />\r\n                 <span className=\"bar\" />\r\n                 <span className=\"bar\" />\r\n             </button>\r\n"
+                }
+            ],
+            "date": 1787153700988,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nexport default function Header() {\r\n    return (\r\n        <header className=\"app-header\">\r\n            <div className=\"hamburger\">☰</div>\r\n            <div className=\"brand\">GIM-HZ 2026</div>\r\n            <div className=\"spacer\" />\r\n            <button className=\"primary-btn\">creer programme</button>\r\n        </header>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

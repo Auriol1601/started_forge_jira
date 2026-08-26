@@ -9,6 +9,8 @@ modules:
   function:
     - key: resolver
       handler: index.handler
+    - key: getIssues
+      handler: src/forge/handlers.getIssues
 resources:
   - key: main
     path: static/hello-world/build

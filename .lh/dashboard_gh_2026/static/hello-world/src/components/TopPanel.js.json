@@ -1,0 +1,46 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/TopPanel.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1787155031061,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787155653024,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n export default function TopPanel() {\r\n     return (\r\n         <div className=\"top-panel\">\r\n             <div className=\"top-panel-inner\">\r\n-                <div className=\"panel-dots\">⋮</div>\r\n+                <div className=\"panel-dots\"><span></span><span></span><span></span></div>\r\n                 <div className=\"panel-content\">\r\n                     <div className=\"left-col\">\r\n                         <div className=\"circles-row\">\r\n                             <MetricCircle size=\"large\" percent=\"45 %\" label=\"Horizon 2026\" />\r\n"
+                },
+                {
+                    "date": 1787155823595,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n \r\n                         <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                     </div>\r\n \r\n-                    <div className=\"right-col\">\r\n+                    <div className=\"right-axes\">\r\n                         {projects.map((p, i) => (\r\n                             <ProjectStatusRow key={i} label={p.label} value={p.value} />\r\n                         ))}\r\n                     </div>\r\n"
+                },
+                {
+                    "date": 1787155830433,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n \r\n                         <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                     </div>\r\n \r\n-                    <div className=\"right-axes\">\r\n+                    <div className=\"right-col\">\r\n                         {projects.map((p, i) => (\r\n                             <ProjectStatusRow key={i} label={p.label} value={p.value} />\r\n                         ))}\r\n                     </div>\r\n"
+                },
+                {
+                    "date": 1787156002012,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,11 +33,13 @@\n                         <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                     </div>\r\n \r\n                     <div className=\"right-col\">\r\n-                        {projects.map((p, i) => (\r\n-                            <ProjectStatusRow key={i} label={p.label} value={p.value} />\r\n-                        ))}\r\n+                        <div className=\"project-list\">\r\n+                            {projects.map((p, i) => (\r\n+                                <ProjectStatusRow key={i} label={p.label} value={p.value} />\r\n+                            ))}\r\n+                        </div>\r\n                     </div>\r\n                 </div>\r\n             </div>\r\n         </div>\r\n"
+                },
+                {
+                    "date": 1787156457347,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import React from 'react';\r\n import MetricCircle from './MetricCircle';\r\n import ProjectStatusRow from './ProjectStatusRow';\r\n+import SummaryBar from './SummaryBar';\r\n \r\n const projects = [\r\n     { label: 'GIM SCHEMA PAIEMENT', value: '70%' },\r\n     { label: 'GIM TRILOGIE', value: '70%' },\r\n@@ -40,8 +41,9 @@\n                             ))}\r\n                         </div>\r\n                     </div>\r\n                 </div>\r\n+                <SummaryBar />\r\n             </div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787156601103,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,17 +22,18 @@\n                 <div className=\"panel-dots\"><span></span><span></span><span></span></div>\r\n                 <div className=\"panel-content\">\r\n                     <div className=\"left-col\">\r\n                         <div className=\"circles-row\">\r\n-                            <MetricCircle size=\"large\" percent=\"45 %\" label=\"Horizon 2026\" />\r\n+                            <div className=\"large-stack\">\r\n+                                <MetricCircle size=\"large\" percent=\"45 %\" label=\"Horizon 2026\" />\r\n+                                <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n+                            </div>\r\n                             <div className=\"small-circles\">\r\n                                 <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 1\" />\r\n                                 <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 2\" />\r\n                                 <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 3\" />\r\n                             </div>\r\n                         </div>\r\n-\r\n-                        <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                     </div>\r\n \r\n                     <div className=\"right-col\">\r\n                         <div className=\"project-list\">\r\n"
+                },
+                {
+                    "date": 1787156855654,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import React from 'react';\r\n import MetricCircle from './MetricCircle';\r\n import ProjectStatusRow from './ProjectStatusRow';\r\n import SummaryBar from './SummaryBar';\r\n+import MenuOption from './MenuOption';\r\n \r\n const projects = [\r\n     { label: 'GIM SCHEMA PAIEMENT', value: '70%' },\r\n     { label: 'GIM TRILOGIE', value: '70%' },\r\n@@ -23,8 +24,9 @@\n                 <div className=\"panel-content\">\r\n                     <div className=\"left-col\">\r\n                         <div className=\"circles-row\">\r\n                             <div className=\"large-stack\">\r\n+                                <MenuOption />\r\n                                 <MetricCircle size=\"large\" percent=\"45 %\" label=\"Horizon 2026\" />\r\n                                 <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                             </div>\r\n                             <div className=\"small-circles\">\r\n"
+                }
+            ],
+            "date": 1787155031061,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\nimport MetricCircle from './MetricCircle';\r\nimport ProjectStatusRow from './ProjectStatusRow';\r\n\r\nconst projects = [\r\n    { label: 'GIM SCHEMA PAIEMENT', value: '70%' },\r\n    { label: 'GIM TRILOGIE', value: '70%' },\r\n    { label: 'GIM SOUVERA', value: '70%' },\r\n    { label: 'GIM TECHNOPOLE', value: '20%' },\r\n    { label: 'GIMPAY', value: '70%' },\r\n    { label: 'GIM EXCELLENCE', value: '65%' },\r\n    { label: 'SIMULATION GAMIFI', value: '80%' },\r\n    { label: 'GIMPULSE', value: '50%' },\r\n    { label: 'GIM TRANSFORM', value: '70%' }\r\n];\r\n\r\nexport default function TopPanel() {\r\n    return (\r\n        <div className=\"top-panel\">\r\n            <div className=\"top-panel-inner\">\r\n                <div className=\"panel-dots\">⋮</div>\r\n                <div className=\"panel-content\">\r\n                    <div className=\"left-col\">\r\n                        <div className=\"circles-row\">\r\n                            <MetricCircle size=\"large\" percent=\"45 %\" label=\"Horizon 2026\" />\r\n                            <div className=\"small-circles\">\r\n                                <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 1\" />\r\n                                <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 2\" />\r\n                                <MetricCircle size=\"small\" percent=\"20 %\" label=\"AXE 3\" />\r\n                            </div>\r\n                        </div>\r\n\r\n                        <button className=\"action-pill\">GENERER UN RAPPORT</button>\r\n                    </div>\r\n\r\n                    <div className=\"right-col\">\r\n                        {projects.map((p, i) => (\r\n                            <ProjectStatusRow key={i} label={p.label} value={p.value} />\r\n                        ))}\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

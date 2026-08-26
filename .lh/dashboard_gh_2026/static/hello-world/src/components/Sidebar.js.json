@@ -1,0 +1,18 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/Sidebar.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1787157663433,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1787157663433,
+            "name": "Commit-0",
+            "content": "import React, { useEffect } from 'react';\r\n\r\nexport default function Sidebar({ open, onClose }){\r\n    useEffect(()=>{\r\n        function onKey(e){ if(e.key==='Escape') onClose(); }\r\n        if(open) document.addEventListener('keydown', onKey);\r\n        return ()=>document.removeEventListener('keydown', onKey);\r\n    },[open,onClose]);\r\n\r\n    return (\r\n        <div className={`sidebar-root ${open ? 'open' : ''}`} aria-hidden={!open}>\r\n            <div className=\"sidebar-backdrop\" onClick={onClose} />\r\n            <aside className=\"sidebar-panel\" role=\"dialog\" aria-label=\"menu\">\r\n                <div className=\"sidebar-header\">MENU</div>\r\n                <div className=\"sidebar-body\">\r\n                    <button className=\"side-item\">gestions des programmes</button>\r\n                    <button className=\"side-item\">dashboard GIM-HORIZON 26</button>\r\n                </div>\r\n                <div className=\"sidebar-footer\">\r\n                    <button className=\"side-logout\">Se déconnecter</button>\r\n                </div>\r\n            </aside>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

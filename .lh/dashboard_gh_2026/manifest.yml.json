@@ -1,0 +1,18 @@
+{
+    "sourceFile": "dashboard_gh_2026/manifest.yml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1787159131753,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1787159131753,
+            "name": "Commit-0",
+            "content": "modules:\n  jira:fullPage:\n    - key: dashboard-gh-2026-hello-world-full-page\n      resource: main\n      resolver:\n        function: resolver\n      title: dashboard_gh_2026\n      routePrefix: hello-world\n  function:\n    - key: resolver\n      handler: index.handler\n    - key: getIssues\n      handler: src/forge/handlers.getIssues\nresources:\n  - key: main\n    path: static/hello-world/build\napp:\n  runtime:\n    name: nodejs24.x\n    memoryMB: 256\n    architecture: arm64\n  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1\n"
+        }
+    ]
+}

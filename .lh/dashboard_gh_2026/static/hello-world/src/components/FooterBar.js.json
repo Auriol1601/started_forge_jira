@@ -1,0 +1,34 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/FooterBar.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1787153719705,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787153867283,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import React from 'react';\r\n \r\n export default function FooterBar() {\r\n     return (\r\n-        <div className=\"footer-bar\">\r\n+        <div className=\"metric-bar\">\r\n             <div className=\"budget\">10090000 FCFA Budgé restant</div>\r\n             <div className=\"arbitrages\"><span className=\"big\">50</span> Arbitrages</div>\r\n             <div className=\"stats\">15 vigilances&nbsp;&nbsp;15 projets terminé</div>\r\n         </div>\r\n"
+                },
+                {
+                    "date": 1787154022803,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,7 @@\n \r\n export default function FooterBar() {\r\n     return (\r\n         <div className=\"metric-bar\">\r\n-            <div className=\"budget\">10090000 FCFA Budgé restant</div>\r\n-            <div className=\"arbitrages\"><span className=\"big\">50</span> Arbitrages</div>\r\n-            <div className=\"stats\">15 vigilances&nbsp;&nbsp;15 projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787154038623,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,6 @@\n import React from 'react';\r\n \r\n export default function FooterBar() {\r\n     return (\r\n-        <div className=\"metric-bar\">\r\n-        </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787154133066,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,3 @@\n-import React from 'react';\r\n+import MetricsBar from './MetricsBar';\r\n \r\n-export default function FooterBar() {\r\n-    return (\r\n-    );\r\n-}\r\n+export default MetricsBar;\r\n"
+                }
+            ],
+            "date": 1787153719704,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nexport default function FooterBar() {\r\n    return (\r\n        <div className=\"footer-bar\">\r\n            <div className=\"budget\">10090000 FCFA Budgé restant</div>\r\n            <div className=\"arbitrages\"><span className=\"big\">50</span> Arbitrages</div>\r\n            <div className=\"stats\">15 vigilances&nbsp;&nbsp;15 projets terminé</div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

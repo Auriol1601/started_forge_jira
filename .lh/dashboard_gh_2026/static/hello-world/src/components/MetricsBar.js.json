@@ -1,0 +1,22 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/MetricsBar.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1787154127248,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787154935626,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n     return (\r\n         <div className=\"metric-bar\">\r\n             <div className=\"budget\">10090000 FCFA Budgé restant</div>\r\n             <div className=\"arbitrages\"><span className=\"big\">50</span> Arbitrages</div>\r\n-            <div className=\"stats\">15 vigilances&nbsp;&nbsp;15 projets terminé</div>\r\n+            <div className=\"stats\">15 vigilances</div>\r\n+            <div className=\"stats\">15 projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                }
+            ],
+            "date": 1787154127248,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nexport default function MetricsBar() {\r\n    return (\r\n        <div className=\"metric-bar\">\r\n            <div className=\"budget\">10090000 FCFA Budgé restant</div>\r\n            <div className=\"arbitrages\"><span className=\"big\">50</span> Arbitrages</div>\r\n            <div className=\"stats\">15 vigilances&nbsp;&nbsp;15 projets terminé</div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

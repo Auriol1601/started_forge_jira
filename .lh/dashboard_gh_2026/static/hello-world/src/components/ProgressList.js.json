@@ -1,0 +1,18 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/ProgressList.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1787153700990,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1787153700990,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\nimport ProgressItem from './ProgressItem';\r\n\r\nexport default function ProgressList({ items }) {\r\n    return (\r\n        <div className=\"progress-list\">\r\n            {items.map((it, i) => (\r\n                <ProgressItem key={i} label={it[0]} percent={it[1]} />\r\n            ))}\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

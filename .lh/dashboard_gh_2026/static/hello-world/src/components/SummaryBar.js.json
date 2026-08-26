@@ -1,0 +1,38 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/SummaryBar.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1787155044025,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787156203547,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n export default function SummaryBar(){\r\n     return (\r\n         <div className=\"summary-bar\">\r\n             <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n-            <div className=\"summary-center\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n+            <div className=\"summary-center\"><span className=\"big-red\">51</span> Arbitrages</div>\r\n             <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787156215456,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n export default function SummaryBar(){\r\n     return (\r\n         <div className=\"summary-bar\">\r\n             <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n-            <div className=\"summary-center\"><span className=\"big-red\">51</span> Arbitrages</div>\r\n+            <div className=\"summary-center\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n             <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787156246187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n     return (\r\n         <div className=\"summary-bar\">\r\n             <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n             <div className=\"summary-center\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n+            <div className=\"summary-center\"><span className=\"big-red\">30</span> Vigilances</div>\r\n             <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787156320631,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,12 @@\n export default function SummaryBar(){\r\n     return (\r\n         <div className=\"summary-bar\">\r\n             <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n-            <div className=\"summary-center\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n-            <div className=\"summary-center\"><span className=\"big-red\">30</span> Vigilances</div>\r\n+            <div className=\"summary-center\">\r\n+                <div className=\"metric-item\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n+                <div className=\"metric-item\"><span className=\"big-yellow\">30</span> Vigilances</div>\r\n+            </div>\r\n             <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n         </div>\r\n     );\r\n }\r\n"
+                },
+                {
+                    "date": 1787156386187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n     return (\r\n         <div className=\"summary-bar\">\r\n             <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n             <div className=\"summary-center\">\r\n-                <div className=\"metric-item\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n-                <div className=\"metric-item\"><span className=\"big-yellow\">30</span> Vigilances</div>\r\n+                <div className=\"metric-item\"><span className=\"big-red\">50</span> <span className=\"label-red\">Arbitrages</span></div>\r\n+                <div className=\"metric-item\"><span className=\"big-yellow\">30</span> <span className=\"label-yellow\">Vigilances</span></div>\r\n             </div>\r\n             <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n         </div>\r\n     );\r\n"
+                }
+            ],
+            "date": 1787155044025,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nexport default function SummaryBar(){\r\n    return (\r\n        <div className=\"summary-bar\">\r\n            <div className=\"summary-left\">10090000 FCFA Budgé restant</div>\r\n            <div className=\"summary-center\"><span className=\"big-red\">50</span> Arbitrages</div>\r\n            <div className=\"summary-right\"><span className=\"green\">15</span> projets terminé</div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

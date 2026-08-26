@@ -1,0 +1,22 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/ProgressItem.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1787153719711,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787154775405,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,11 +8,16 @@\n export default function ProgressItem({ label, percent }) {\r\n     const p = parsePercent(percent);\r\n     return (\r\n         <div className=\"progress-item\">\r\n-            <div className=\"progress-label\"><span className=\"pct\">{percent}</span> {label}</div>\r\n-            <div className=\"progress-bar\">\r\n-                <div className=\"bar-fill\" style={{ width: `${p}%` }} />\r\n+            <div className=\"progress-row\">\r\n+                <div className=\"pct-box\">{percent}</div>\r\n+                <div className=\"label-and-bar\">\r\n+                    <div className=\"label-box\">{label}</div>\r\n+                    <div className=\"progress-bar\">\r\n+                        <div className=\"bar-fill\" style={{ width: `${p}%` }} />\r\n+                    </div>\r\n+                </div>\r\n             </div>\r\n         </div>\r\n     );\r\n }\r\n"
+                }
+            ],
+            "date": 1787153719711,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nfunction parsePercent(p) {\r\n    if (!p) return 0;\r\n    return parseInt(String(p).replace('%','')) || 0;\r\n}\r\n\r\nexport default function ProgressItem({ label, percent }) {\r\n    const p = parsePercent(percent);\r\n    return (\r\n        <div className=\"progress-item\">\r\n            <div className=\"progress-label\"><span className=\"pct\">{percent}</span> {label}</div>\r\n            <div className=\"progress-bar\">\r\n                <div className=\"bar-fill\" style={{ width: `${p}%` }} />\r\n            </div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}

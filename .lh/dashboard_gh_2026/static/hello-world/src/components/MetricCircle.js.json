@@ -1,0 +1,18 @@
+{
+    "sourceFile": "dashboard_gh_2026/static/hello-world/src/components/MetricCircle.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1787155031060,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1787155031060,
+            "name": "Commit-0",
+            "content": "import React from 'react';\r\n\r\nexport default function MetricCircle({ size = 'small', percent, label }) {\r\n    const isLarge = size === 'large';\r\n    return (\r\n        <div className={isLarge ? 'metric-circle large' : 'metric-circle small'}>\r\n            <div className=\"metric-percent\">{percent}</div>\r\n            <div className=\"metric-label\">{label}</div>\r\n        </div>\r\n    );\r\n}\r\n"
+        }
+    ]
+}
