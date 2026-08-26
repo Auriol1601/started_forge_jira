@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ProgramFormPanel from './ProgramFormPanel';
 import ProgramTablePanel from './ProgramTablePanel';
+import { invoke } from '@forge/bridge';
 
 const initialPrograms = [
     {
@@ -61,17 +62,16 @@ export default function ProgramPage() {
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const { invoke } = await import('@forge/bridge');
                 const result = await invoke('getProjectCategories');
-                const jiraCategories = Array.isArray(result) ? result : [];
 
-                console.log('Catégories Jira retournées :', jiraCategories);
-                console.log('Nombre de catégories Jira :', jiraCategories.length);
-                console.table(jiraCategories);
+                console.log('Catégories Jira :', result);
 
-                setCategories(jiraCategories);
+                setCategories(result);
             } catch (error) {
-                console.warn('Catégories Jira indisponibles hors du contexte Jira :', error);
+                console.error(
+                    'Erreur récupération catégories Jira :',
+                    error
+                );
             }
         };
 
