@@ -68,6 +68,33 @@ export default function ProgramPage() {
     const [pendingDelete, setPendingDelete] = useState(null);
     const [formData, setFormData] = useState({ ...emptyForm });
 
+
+    useEffect(() => {
+        const testProjectCreationPermission = async () => {
+            console.log(
+                '[FRONT] Test permission création projet démarré'
+            );
+
+            try {
+                const result = await invoke(
+                    'checkProjectCreationPermission'
+                );
+
+                console.log(
+                    '[FRONT] Permission Jira:',
+                    result
+                );
+            } catch (error) {
+                console.error(
+                    '[FRONT] Erreur vérification permission:',
+                    error
+                );
+            }
+        };
+
+        testProjectCreationPermission();
+    }, []);
+    
     useEffect(() => {
         const testProjectTemplates = async () => {
             console.log('[FRONT] Test project templates démarré');

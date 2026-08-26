@@ -14,6 +14,52 @@ resolver.define('getText', (req) => {
 });
 
 /**
+ * Test d'autorisation compte jira associez pour creer un projet .
+ */
+
+resolver.define('checkProjectCreationPermission', async () => {
+    console.log('[checkProjectCreationPermission] START');
+
+    const response = await api
+        .asApp()
+        .requestJira(
+            route`/rest/api/3/mypermissions?permissions=ADMINISTER`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                },
+            }
+        );
+
+    console.log(
+        '[checkProjectCreationPermission] Jira status:',
+        response.status
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error(
+            '[checkProjectCreationPermission] Jira error:',
+            errorText
+        );
+
+        throw new Error(
+            `Impossible de vérifier les permissions Jira : ${response.status} ${errorText}`
+        );
+    }
+
+    const permissions = await response.json();
+
+    console.log(
+        '[checkProjectCreationPermission] Permissions:',
+        permissions
+    );
+
+    return permissions;
+});
+
+/**
  * Récupère les templates de projets Jira disponibles.
  */
 resolver.define('getProjectTemplates', async () => {
