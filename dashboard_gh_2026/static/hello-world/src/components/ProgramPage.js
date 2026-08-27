@@ -3,50 +3,7 @@ import ProgramFormPanel from './ProgramFormPanel';
 import ProgramTablePanel from './ProgramTablePanel';
 import { invoke } from '@forge/bridge';
 
-const initialPrograms = [
-    // {
-    //     id: 1,
-    //     name: 'Schema paiement',
-    //     status: 'EN COURS',
-    //     budgetCons: '2000000FCFA',
-    //     startDate: '03/08/2026',
-    //     endDate: '04/08/2026',
-    //     axle: 'AXE 1',
-    //     responsable: '',
-    //     sponsor: 'Ministère',
-    //     typeJira: 'software',
-    //     template: 'scrum',
-    //     description: 'Description ......',
-    // },
-    // {
-    //     id: 2,
-    //     name: 'GIM trilogie',
-    //     status: 'PLANIFIE',
-    //     budgetCons: '1800000FCFA',
-    //     startDate: '05/08/2026',
-    //     endDate: '12/08/2026',
-    //     axle: 'AXE 2',
-    //     responsable: '',
-    //     sponsor: 'Direction',
-    //     typeJira: 'software',
-    //     template: 'kanban',
-    //     description: 'Description ......',
-    // },
-    // {
-    //     id: 3,
-    //     name: 'GIM souvera',
-    //     status: 'TERMINE',
-    //     budgetCons: '2600000FCFA',
-    //     startDate: '01/07/2026',
-    //     endDate: '15/07/2026',
-    //     axle: 'AXE 3',
-    //     responsable: '',
-    //     sponsor: 'Coordination',
-    //     typeJira: 'software',
-    //     template: 'scrum',
-    //     description: 'Description ......',
-    // },
-];
+const initialPrograms = [];
 
 const emptyForm = {
     axle: '',
@@ -66,45 +23,66 @@ const emptyForm = {
 
 export default function ProgramPage() {
     /*
-     * Données provenant de Jira
+     * =========================================================
+     * DONNÉES JIRA
+     * =========================================================
      */
+
     const [categories, setCategories] = useState([]);
     const [users, setUsers] = useState([]);
     const [projectTypes, setProjectTypes] = useState([]);
 
     /*
-     * Données actuellement utilisées par la table.
-     * Elles seront remplacées par les vrais projets Jira
-     * lors de l'étape suivante.
+     * =========================================================
+     * PROGRAMMES
+     * =========================================================
+     *
+     * Pour le moment, les programmes sont conservés
+     * uniquement en mémoire côté interface.
+     *
+     * La persistance Jira viendra dans l'étape suivante.
      */
+
     const [programs, setPrograms] = useState(initialPrograms);
 
     /*
-     * Gestion de la sélection / modification
+     * =========================================================
+     * ÉTAT DE L'INTERFACE
+     * =========================================================
      */
+
     const [selectedId, setSelectedId] = useState(null);
     const [pendingDelete, setPendingDelete] = useState(null);
 
     /*
-     * Données du formulaire
+     * =========================================================
+     * FORMULAIRE
+     * =========================================================
      */
-    const [formData, setFormData] = useState({ ...emptyForm });
+
+    const [formData, setFormData] = useState({
+        ...emptyForm,
+    });
 
     /*
      * =========================================================
      * CHARGEMENT DES RESPONSABLES JIRA
      * =========================================================
      */
+
     useEffect(() => {
         const loadUsers = async () => {
             console.log(
-                '[FRONT] Recherche des responsables Jira démarrée'
+                '[FRONT] Chargement des responsables Jira...'
             );
 
             try {
-                const result = await invoke('searchUsers', {
-                    query: 'pulseone',
-                });
+                const result = await invoke(
+                    'searchUsers',
+                    {
+                        query: 'pulseone',
+                    }
+                );
 
                 console.log(
                     '[FRONT] Responsables Jira retournés :',
@@ -112,13 +90,17 @@ export default function ProgramPage() {
                 );
 
                 setUsers(
-                    Array.isArray(result) ? result : []
+                    Array.isArray(result)
+                        ? result
+                        : []
                 );
             } catch (error) {
                 console.error(
-                    '[FRONT] Erreur recherche utilisateurs Jira :',
+                    '[FRONT] Erreur chargement responsables Jira :',
                     error
                 );
+
+                setUsers([]);
             }
         };
 
@@ -132,10 +114,11 @@ export default function ProgramPage() {
      * Les catégories représentent les axes stratégiques.
      * =========================================================
      */
+
     useEffect(() => {
         const loadCategories = async () => {
             console.log(
-                '[FRONT] Chargement des catégories Jira démarré'
+                '[FRONT] Chargement des catégories Jira...'
             );
 
             try {
@@ -143,29 +126,36 @@ export default function ProgramPage() {
                     'getProjectCategories'
                 );
 
+                const safeCategories =
+                    Array.isArray(result)
+                        ? result
+                        : [];
+
                 console.log(
                     '[FRONT] Catégories Jira retournées :',
-                    result
+                    safeCategories
                 );
 
                 console.log(
                     '[FRONT] Nombre de catégories Jira :',
-                    result.length
+                    safeCategories.length
                 );
 
-                const safeCategories = Array.isArray(result)
-                    ? result
-                    : [];
-
-                setCategories(safeCategories);
+                setCategories(
+                    safeCategories
+                );
 
                 /*
                  * Sélection automatique du premier axe
-                 * uniquement si aucun axe n'est encore sélectionné.
+                 * uniquement si aucun axe n'est sélectionné.
                  */
-                if (safeCategories.length > 0) {
+
+                if (
+                    safeCategories.length > 0
+                ) {
                     setFormData((prev) => ({
                         ...prev,
+
                         axle:
                             prev.axle ||
                             safeCategories[0].id,
@@ -176,6 +166,8 @@ export default function ProgramPage() {
                     '[FRONT] Erreur récupération catégories Jira :',
                     error
                 );
+
+                setCategories([]);
             }
         };
 
@@ -185,12 +177,9 @@ export default function ProgramPage() {
     /*
      * =========================================================
      * CHARGEMENT DES TYPES DE PROJETS JIRA
-     *
-     * Exemple :
-     * software
-     * business
      * =========================================================
      */
+
     useEffect(() => {
         const loadProjectTypes = async () => {
             console.log(
@@ -202,23 +191,48 @@ export default function ProgramPage() {
                     'getAccessibleProjectTypes'
                 );
 
-                console.log(
-                    '[FRONT] Types de projets Jira retournés :',
-                    result
-                );
-
-                console.table(result);
-
-                setProjectTypes(
+                const safeProjectTypes =
                     Array.isArray(result)
                         ? result
-                        : []
+                        : [];
+
+                console.log(
+                    '[FRONT] Types de projets Jira retournés :',
+                    safeProjectTypes
                 );
+
+                console.log(
+                    '[FRONT] Nombre de types de projets :',
+                    safeProjectTypes.length
+                );
+
+                setProjectTypes(
+                    safeProjectTypes
+                );
+
+                /*
+                 * Si aucun type n'est défini dans le formulaire,
+                 * on sélectionne le premier type disponible.
+                 */
+
+                if (
+                    safeProjectTypes.length > 0
+                ) {
+                    setFormData((prev) => ({
+                        ...prev,
+
+                        typeJira:
+                            prev.typeJira ||
+                            safeProjectTypes[0].key,
+                    }));
+                }
             } catch (error) {
                 console.error(
                     '[FRONT] Erreur récupération types de projets Jira :',
                     error
                 );
+
+                setProjectTypes([]);
             }
         };
 
@@ -227,10 +241,14 @@ export default function ProgramPage() {
 
     /*
      * =========================================================
-     * MODIFICATION D'UN CHAMP DU FORMULAIRE
+     * MODIFICATION D'UN CHAMP
      * =========================================================
      */
-    const updateField = (field, value) => {
+
+    const updateField = (
+        field,
+        value
+    ) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
@@ -240,55 +258,64 @@ export default function ProgramPage() {
     /*
      * =========================================================
      * SÉLECTION D'UN PROGRAMME
-     *
-     * Pour l'instant les programmes viennent encore du mock.
-     * Cette fonction sera conservée pour la future lecture Jira.
      * =========================================================
      */
-    const handleSelectProgram = (program) => {
-        setSelectedId(program.id);
+
+    const handleSelectProgram = (
+        program
+    ) => {
+        console.log(
+            '[FRONT] Programme sélectionné :',
+            program
+        );
+
+        setSelectedId(
+            program.id
+        );
 
         setFormData({
             ...emptyForm,
             ...program,
-            budget: program.budget || '',
+
+            budget:
+                program.budget || '',
         });
     };
 
     /*
      * =========================================================
-     * SOUMISSION DU FORMULAIRE
-     *
-     * IMPORTANT :
-     * Pour cette étape, on ne crée PAS encore de projet Jira.
-     *
-     * On conserve uniquement le comportement local.
-     * La prochaine étape remplacera cette partie par :
-     *
-     * invoke('createProgram', formData)
-     *
+     * CRÉATION DU PROGRAMME
      * =========================================================
      */
+
     const handleSubmit = async () => {
-        console.log('[FRONT] Création du programme démarrée');
+        console.log(
+            '[FRONT] Création du programme démarrée'
+        );
 
         /*
-         * =========================================================
+         * -----------------------------------------------------
          * VALIDATION DU NOM
-         * =========================================================
+         * -----------------------------------------------------
          */
-        if (!formData.name || !formData.name.trim()) {
+
+        if (
+            !formData.name ||
+            !formData.name.trim()
+        ) {
             console.warn(
                 '[FRONT] Nom du programme obligatoire'
             );
+
             return;
         }
 
         /*
-         * =========================================================
+         * -----------------------------------------------------
          * VALIDATION DE LA CLÉ JIRA
-         * =========================================================
+         * -----------------------------------------------------
          */
+
         if (
             !formData.projectKey ||
             !formData.projectKey.trim()
@@ -296,6 +323,7 @@ export default function ProgramPage() {
             console.warn(
                 '[FRONT] Clé du projet Jira obligatoire'
             );
+
             return;
         }
 
@@ -304,19 +332,18 @@ export default function ProgramPage() {
                 .trim()
                 .toUpperCase();
 
-        /*
-         * Lettres et chiffres uniquement
-         */
-        if (!/^[A-Z0-9]+$/.test(normalizedProjectKey)) {
+        if (
+            !/^[A-Z0-9]+$/.test(
+                normalizedProjectKey
+            )
+        ) {
             console.warn(
                 '[FRONT] La clé Jira doit contenir uniquement des lettres et des chiffres'
             );
+
             return;
         }
 
-        /*
-         * Longueur Jira
-         */
         if (
             normalizedProjectKey.length < 2 ||
             normalizedProjectKey.length > 10
@@ -324,43 +351,50 @@ export default function ProgramPage() {
             console.warn(
                 '[FRONT] La clé Jira doit contenir entre 2 et 10 caractères'
             );
+
             return;
         }
 
         /*
-         * =========================================================
-         * VALIDATION DU RESPONSABLE
-         * =========================================================
+         * -----------------------------------------------------
+         * RESPONSABLE
+         * -----------------------------------------------------
          */
+
         if (!formData.responsable) {
             console.warn(
                 '[FRONT] Responsable obligatoire'
             );
+
             return;
         }
 
         /*
-         * =========================================================
-         * VALIDATION DU TYPE JIRA
-         * =========================================================
+         * -----------------------------------------------------
+         * TYPE JIRA
+         * -----------------------------------------------------
          */
+
         if (!formData.typeJira) {
             console.warn(
                 '[FRONT] Type Jira obligatoire'
             );
+
             return;
         }
 
         /*
-         * =========================================================
+         * -----------------------------------------------------
          * PAYLOAD
-         * =========================================================
+         * -----------------------------------------------------
          */
 
         const payload = {
-            name: formData.name.trim(),
+            name:
+                formData.name.trim(),
 
-            projectKey: normalizedProjectKey,
+            projectKey:
+                normalizedProjectKey,
 
             description:
                 formData.description || '',
@@ -381,16 +415,17 @@ export default function ProgramPage() {
         );
 
         /*
-         * =========================================================
-         * APPEL BACKEND
-         * =========================================================
+         * -----------------------------------------------------
+         * APPEL FORGE
+         * -----------------------------------------------------
          */
 
         try {
-            const result = await invoke(
-                'createProgram',
-                payload
-            );
+            const result =
+                await invoke(
+                    'createProgram',
+                    payload
+                );
 
             console.log(
                 '[FRONT] Projet Jira créé :',
@@ -398,19 +433,23 @@ export default function ProgramPage() {
             );
 
             /*
-             * =====================================================
-             * AJOUT DU PROGRAMME DANS LE TABLEAU
-             * =====================================================
+             * -------------------------------------------------
+             * CONSTRUCTION DU PROGRAMME LOCAL
+             * -------------------------------------------------
              */
 
             const program = {
-                id: result.id,
+                id:
+                    result.id,
 
                 jiraKey:
                     result.key,
 
                 name:
-                    formData.name,
+                    formData.name.trim(),
+
+                projectKey:
+                    normalizedProjectKey,
 
                 status:
                     formData.status,
@@ -419,13 +458,16 @@ export default function ProgramPage() {
                     formData.budget,
 
                 budgetCons:
-                    formData.budgetCons || '0FCFA',
+                    formData.budgetCons ||
+                    '0FCFA',
 
                 startDate:
-                    formData.startDate || '00/00/0000',
+                    formData.startDate ||
+                    '00/00/0000',
 
                 endDate:
-                    formData.endDate || '00/00/0000',
+                    formData.endDate ||
+                    '00/00/0000',
 
                 axle:
                     formData.axle,
@@ -435,9 +477,6 @@ export default function ProgramPage() {
 
                 sponsor:
                     formData.sponsor,
-
-                projectKey:
-                    normalizedProjectKey,
 
                 typeJira:
                     formData.typeJira,
@@ -449,18 +488,59 @@ export default function ProgramPage() {
                     formData.description,
             };
 
+            /*
+             * -------------------------------------------------
+             * AJOUT DANS LE TABLEAU
+             * -------------------------------------------------
+             */
+
             setPrograms((prev) => [
                 program,
                 ...prev,
             ]);
 
+            /*
+             * -------------------------------------------------
+             * SÉLECTION DU PROGRAMME CRÉÉ
+             * -------------------------------------------------
+             */
+
             setSelectedId(
                 program.id
             );
 
+            /*
+             * -------------------------------------------------
+             * RÉINITIALISATION DU FORMULAIRE
+             * -------------------------------------------------
+             */
+
+            setFormData({
+                ...emptyForm,
+
+                /*
+                 * On conserve l'axe actuellement sélectionné
+                 * pour faciliter la création du programme suivant.
+                 */
+
+                axle:
+                    formData.axle,
+
+                /*
+                 * On conserve également le type Jira.
+                 */
+
+                typeJira:
+                    formData.typeJira,
+            });
+
             console.log(
                 '[FRONT] Programme ajouté au tableau :',
                 program
+            );
+
+            console.log(
+                '[FRONT] Formulaire réinitialisé'
             );
 
         } catch (error) {
@@ -471,135 +551,183 @@ export default function ProgramPage() {
         }
     };
 
-/*
- * =========================================================
- * SUPPRESSION LOCALE
- *
- * Sera remplacée par deleteProgram() lors de l'intégration
- * Jira.
- * =========================================================
- */
-const handleDeleteConfirmed = () => {
-    if (!pendingDelete) {
-        return;
-    }
-
-    setPrograms((prev) =>
-        prev.filter(
-            (item) =>
-                item.id !== pendingDelete.id
-        )
-    );
-
     /*
-     * Fermeture de la modal
+     * =========================================================
+     * SUPPRESSION
+     *
+     * ATTENTION :
+     * Pour l'instant suppression locale uniquement.
+     *
+     * La suppression Jira sera intégrée dans une prochaine
+     * étape.
+     * =========================================================
      */
-    setPendingDelete(null);
 
-    /*
-     * Si le programme supprimé était sélectionné,
-     * on sélectionne le premier programme restant.
-     */
-    setSelectedId((current) => {
-        if (
-            current !== pendingDelete.id
-        ) {
-            return current;
+    const handleDeleteConfirmed = () => {
+        if (!pendingDelete) {
+            return;
         }
 
-        const remainingPrograms =
-            programs.filter(
+        const deletedId =
+            pendingDelete.id;
+
+        console.log(
+            '[FRONT] Suppression locale du programme :',
+            deletedId
+        );
+
+        setPrograms((prev) =>
+            prev.filter(
                 (item) =>
-                    item.id !== pendingDelete.id
-            );
+                    item.id !== deletedId
+            )
+        );
 
-        const next =
-            remainingPrograms[0];
+        setPendingDelete(
+            null
+        );
 
-        return next
-            ? next.id
-            : null;
-    });
-};
+        setSelectedId(
+            (current) => {
+                if (
+                    current !== deletedId
+                ) {
+                    return current;
+                }
 
-return (
-    <main className="program-page-shell">
+                const remaining =
+                    programs.filter(
+                        (item) =>
+                            item.id !==
+                            deletedId
+                    );
 
-        {/* =================================================
+                return remaining.length > 0
+                    ? remaining[0].id
+                    : null;
+            }
+        );
+    };
+
+    /*
+     * =========================================================
+     * RENDER
+     * =========================================================
+     */
+
+    return (
+        <main className="program-page-shell">
+
+            {/* =================================================
                 FORMULAIRE
                 ================================================= */}
-        <ProgramFormPanel
-            formData={formData}
-            categories={categories}
-            users={users}
-            projectTypes={projectTypes}
-            onChange={updateField}
-            onSubmit={handleSubmit}
-        />
 
-        {/* =================================================
-                TABLE
+            <ProgramFormPanel
+                formData={
+                    formData
+                }
+
+                categories={
+                    categories
+                }
+
+                users={
+                    users
+                }
+
+                projectTypes={
+                    projectTypes
+                }
+
+                onChange={
+                    updateField
+                }
+
+                onSubmit={
+                    handleSubmit
+                }
+            />
+
+            {/* =================================================
+                TABLEAU
                 ================================================= */}
-        <ProgramTablePanel
-            programs={programs}
-            selectedId={selectedId}
-            onSelect={handleSelectProgram}
-            onDeleteRequest={setPendingDelete}
-        />
 
-        {/* =================================================
+            <ProgramTablePanel
+                programs={
+                    programs
+                }
+
+                selectedId={
+                    selectedId
+                }
+
+                onSelect={
+                    handleSelectProgram
+                }
+
+                onDeleteRequest={
+                    setPendingDelete
+                }
+            />
+
+            {/* =================================================
                 MODALE DE SUPPRESSION
                 ================================================= */}
-        {pendingDelete && (
-            <div
-                className="delete-modal-overlay"
-                onClick={() =>
-                    setPendingDelete(null)
-                }
-            >
+
+            {pendingDelete && (
                 <div
-                    className="delete-modal"
-                    onClick={(e) =>
-                        e.stopPropagation()
+                    className="delete-modal-overlay"
+                    onClick={() =>
+                        setPendingDelete(
+                            null
+                        )
                     }
                 >
-                    <div className="delete-modal-title">
-                        Confirmation
-                    </div>
+                    <div
+                        className="delete-modal"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+                        <div className="delete-modal-title">
+                            Confirmation
+                        </div>
 
-                    <p className="delete-warning">
-                        La suppression du programme
-                        supprimera tous les projets
-                        associés. Êtes-vous sûr !!
-                    </p>
+                        <p className="delete-warning">
+                            La suppression du programme
+                            supprimera tous les projets
+                            associés. Êtes-vous sûr !!
+                        </p>
 
-                    <div className="delete-modal-actions">
+                        <div className="delete-modal-actions">
 
-                        <button
-                            type="button"
-                            className="delete-modal-cancel"
-                            onClick={() =>
-                                setPendingDelete(null)
-                            }
-                        >
-                            Annuler
-                        </button>
+                            <button
+                                type="button"
+                                className="delete-modal-cancel"
+                                onClick={() =>
+                                    setPendingDelete(
+                                        null
+                                    )
+                                }
+                            >
+                                Annuler
+                            </button>
 
-                        <button
-                            type="button"
-                            className="delete-modal-confirm"
-                            onClick={
-                                handleDeleteConfirmed
-                            }
-                        >
-                            Supprimer
-                        </button>
+                            <button
+                                type="button"
+                                className="delete-modal-confirm"
+                                onClick={
+                                    handleDeleteConfirmed
+                                }
+                            >
+                                Supprimer
+                            </button>
 
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
 
-    </main>
-);
+        </main>
+    );
 }

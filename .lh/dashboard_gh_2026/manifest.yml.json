@@ -3,11 +3,47 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1787159131753,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787742282004,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,18 +5,27 @@\n       resolver:\n         function: resolver\n       title: dashboard_gh_2026\n       routePrefix: hello-world\n+\n   function:\n     - key: resolver\n       handler: index.handler\n+\n     - key: getIssues\n       handler: src/forge/handlers.getIssues\n+\n resources:\n   - key: main\n     path: static/hello-world/build\n+\n+permissions:\n+  scopes:\n+    - read:jira-work\n+\n app:\n   runtime:\n     name: nodejs24.x\n     memoryMB: 256\n     architecture: arm64\n-  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1\n+\n+  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1787743172948,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,14 +6,14 @@\n         function: resolver\n       title: dashboard_gh_2026\n       routePrefix: hello-world\n \n-  function:\n-    - key: resolver\n-      handler: index.handler\n+function:\n+  - key: resolver\n+    handler: index.handler\n \n-    - key: getIssues\n-      handler: src/forge/handlers.getIssues\n+  - key: getIssues\n+    handler: src/forge/handlers.getIssues\n \n resources:\n   - key: main\n     path: static/hello-world/build\n"
+                },
+                {
+                    "date": 1787743257069,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n         function: resolver\n       title: dashboard_gh_2026\n       routePrefix: hello-world\n \n-function:\n+functions:\n   - key: resolver\n     handler: index.handler\n \n   - key: getIssues\n"
+                },
+                {
+                    "date": 1787743477149,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,14 +6,14 @@\n         function: resolver\n       title: dashboard_gh_2026\n       routePrefix: hello-world\n \n-functions:\n-  - key: resolver\n-    handler: index.handler\n+  function:\n+    - key: resolver\n+      handler: index.handler\n \n-  - key: getIssues\n-    handler: src/forge/handlers.getIssues\n+    - key: getIssues\n+      handler: src/forge/handlers.getIssues\n \n resources:\n   - key: main\n     path: static/hello-world/build\n@@ -27,5 +27,5 @@\n     name: nodejs24.x\n     memoryMB: 256\n     architecture: arm64\n \n-  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1\n\\ No newline at end of file\n+  id: ari:cloud:ecosystem::app/30edad1e-f5cf-4f11-bb22-192f31dcb3e1\n"
+                },
+                {
+                    "date": 1787743518335,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,11 +10,8 @@\n   function:\n     - key: resolver\n       handler: index.handler\n \n-    - key: getIssues\n-      handler: src/forge/handlers.getIssues\n-\n resources:\n   - key: main\n     path: static/hello-world/build\n \n"
+                },
+                {
+                    "date": 1787757012844,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n \n permissions:\n   scopes:\n     - read:jira-work\n+    - read:jira-user\n \n app:\n   runtime:\n     name: nodejs24.x\n"
+                },
+                {
+                    "date": 1787760570262,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,8 +18,9 @@\n permissions:\n   scopes:\n     - read:jira-work\n     - read:jira-user\n+    - write:jira-work\n \n app:\n   runtime:\n     name: nodejs24.x\n"
+                },
+                {
+                    "date": 1787761504504,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,8 +19,10 @@\n   scopes:\n     - read:jira-work\n     - read:jira-user\n     - write:jira-work\n+    - read:project:jira\n+    - write:project:jira\n \n app:\n   runtime:\n     name: nodejs24.x\n"
+                },
+                {
+                    "date": 1787827470371,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,8 +21,9 @@\n     - read:jira-user\n     - write:jira-work\n     - read:project:jira\n     - write:project:jira\n+    - manage:jira-configuration\n \n app:\n   runtime:\n     name: nodejs24.x\n"
                 }
             ],
             "date": 1787159131753,

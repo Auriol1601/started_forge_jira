@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1787159142099,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1787751580452,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,21 +1,33 @@\n-import api from '@forge/api';\r\n+import api, { route } from '@forge/api';\r\n \r\n export async function getIssues(context) {\r\n-    // context may include payload from invoke; we expect { jql }\r\n-    const jql = (context && context.jql) ? context.jql : 'project=GIM';\r\n-    const url = `/rest/api/3/search?jql=${encodeURIComponent(jql)}&fields=summary,status,assignee,created&maxResults=25`;\r\n-    const res = await api.asApp().requestJira(url, {\r\n-        headers: {\r\n-            'Accept': 'application/json'\r\n-        }\r\n-    });\r\n+    const jql = (context && context.jql)\r\n+        ? context.jql\r\n+        : 'project=GIM';\r\n+\r\n+    const res = await api\r\n+        .asApp()\r\n+        .requestJira(\r\n+            route`/rest/api/3/search?jql=${jql}&fields=summary,status,assignee,created&maxResults=25`,\r\n+            {\r\n+                headers: {\r\n+                    Accept: 'application/json',\r\n+                },\r\n+            }\r\n+        );\r\n+\r\n     if (!res.ok) {\r\n         const text = await res.text();\r\n-        throw new Error(`Jira request failed: ${res.status} ${text}`);\r\n+\r\n+        throw new Error(\r\n+            `Jira request failed: ${res.status} ${text}`\r\n+        );\r\n     }\r\n+\r\n     const data = await res.json();\r\n+\r\n     return {\r\n         issues: data.issues || [],\r\n-        total: data.total || 0\r\n+        total: data.total || 0,\r\n     };\r\n-}\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1787751667185,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,33 +1,21 @@\n-import api, { route } from '@forge/api';\r\n+import api from '@forge/api';\r\n \r\n export async function getIssues(context) {\r\n-    const jql = (context && context.jql)\r\n-        ? context.jql\r\n-        : 'project=GIM';\r\n-\r\n-    const res = await api\r\n-        .asApp()\r\n-        .requestJira(\r\n-            route`/rest/api/3/search?jql=${jql}&fields=summary,status,assignee,created&maxResults=25`,\r\n-            {\r\n-                headers: {\r\n-                    Accept: 'application/json',\r\n-                },\r\n-            }\r\n-        );\r\n-\r\n+    // context may include payload from invoke; we expect { jql }\r\n+    const jql = (context && context.jql) ? context.jql : 'project=GIM';\r\n+    const url = `/rest/api/3/search?jql=${encodeURIComponent(jql)}&fields=summary,status,assignee,created&maxResults=25`;\r\n+    const res = await api.asApp().requestJira(url, {\r\n+        headers: {\r\n+            'Accept': 'application/json'\r\n+        }\r\n+    });\r\n     if (!res.ok) {\r\n         const text = await res.text();\r\n-\r\n-        throw new Error(\r\n-            `Jira request failed: ${res.status} ${text}`\r\n-        );\r\n\\ No newline at end of file\n+        throw new Error(`Jira request failed: ${res.status} ${text}`);\r\n     }\r\n-\r\n     const data = await res.json();\r\n-\r\n     return {\r\n         issues: data.issues || [],\r\n-        total: data.total || 0,\r\n+        total: data.total || 0\r\n     };\r\n-}\n+}\r\n"
                 }
             ],
             "date": 1787159142099,
