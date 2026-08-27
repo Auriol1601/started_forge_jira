@@ -16,77 +16,196 @@ resolver.define('getText', (req) => {
  * Test creer un projet jira .
  */
 
-resolver.define('createTestProject', async () => {
-    console.log('[createTestProject] START');
+resolver.define('createProgram', async (request) => {
+    console.log('[createProgram] START');
 
-    const projectName = 'TEST - Forge GIM';
-    const projectKey = 'FGIM';
-
-    const payload = {
-        key: projectKey,
-        name: projectName,
-        description: 'Projet de test créé depuis notre interface Forge',
-        projectTypeKey: 'software',
-
-        // Scrum
-        projectTemplateKey:
-            'com.pyxis.greenhopper.jira:gh-scrum-template',
-
-        // Axe 1
-        categoryId: 10000,
-
-        // Responsable testé précédemment
-        leadAccountId:
-            '712020:07db525b-b6f0-409b-9af1-ceaef6ddc438',
-
-        assigneeType: 'PROJECT_LEAD',
-    };
+    const data = request.payload || {};
 
     console.log(
-        '[createTestProject] Payload Jira:',
-        payload
+        '[createProgram] Payload reçu :',
+        data
     );
 
-    const response = await api
-        .asApp()
-        .requestJira(
-            route`/rest/api/3/project`,
-            {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            }
-        );
+    const {
+        name,
+        projectKey,
+        description,
+        axle,
+        responsable,
+        typeJira,
+    } = data;
 
-    console.log(
-        '[createTestProject] Jira status:',
-        response.status
-    );
+    console.log('[createProgram] projectKey brut :', projectKey);
+    console.log('[createProgram] typeof projectKey :', typeof projectKey);
+    console.log('[createProgram] name :', name);
+    console.log('[createProgram] responsable :', responsable);
+    console.log('[createProgram] typeJira :', typeJira);
 
-    const responseText = await response.text();
+    /*
+     * ==============================
+     * VALIDATION
+     * ==============================
+     */
 
-    console.log(
-        '[createTestProject] Jira response:',
-        responseText
-    );
-
-    if (!response.ok) {
+    if (!name || !name.trim()) {
         throw new Error(
-            `Création du projet Jira impossible : ${response.status} ${responseText}`
+            'Le nom du programme est obligatoire.'
         );
     }
 
-    const project = JSON.parse(responseText);
+    if (!projectKey || !projectKey.trim()) {
+        throw new Error(
+            'La clé du projet Jira est obligatoire.'
+        );
+    }
+
+    const normalizedProjectKey =
+        projectKey.trim().toUpperCase();
+
+    /*
+     * Jira :
+     * uniquement lettres et chiffres.
+     */
+    if (!/^[A-Z0-9]+$/.test(normalizedProjectKey)) {
+        throw new Error(
+            'La clé Jira doit contenir uniquement des lettres et des chiffres.'
+        );
+    }
+
+    if (
+        normalizedProjectKey.length < 2 ||
+        normalizedProjectKey.length > 10
+    ) {
+        throw new Error(
+            'La clé Jira doit contenir entre 2 et 10 caractères.'
+        );
+    }
+
+    if (!responsable) {
+        throw new Error(
+            'Le responsable est obligatoire.'
+        );
+    }
+
+    if (!typeJira) {
+        throw new Error(
+            'Le type Jira est obligatoire.'
+        );
+    }
+
+    /*
+     * ==============================
+     * VÉRIFICATION DE LA CLÉ
+     * ==============================
+     */
 
     console.log(
-        '[createTestProject] Projet créé:',
+        '[createProgram] Vérification de la clé :',
+        normalizedProjectKey
+    );
+
+    const existingProjectResponse =
+        await api
+            .asApp()
+            .requestJira(
+                route`/rest/api/3/project/${normalizedProjectKey}`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                }
+            );
+
+    console.log(
+        '[createProgram] Vérification clé status:',
+        existingProjectResponse.status
+    );
+
+    /*
+     * 200 = projet déjà existant
+     */
+    if (existingProjectResponse.ok) {
+        throw new Error(
+            `La clé Jira "${normalizedProjectKey}" est déjà utilisée.`
+        );
+    }
+
+    /*
+     * ==============================
+     * CRÉATION DU PROJET
+     * ==============================
+     */
+
+    const projectData = {
+        name: name.trim(),
+        key: normalizedProjectKey,
+        projectTypeKey: typeJira,
+        description: description || '',
+        leadAccountId: responsable,
+    };
+
+    /*
+     * Axe stratégique = catégorie Jira
+     */
+    if (axle) {
+        projectData.categoryId = Number(axle);
+    }
+
+    console.log(
+        '[createProgram] Payload envoyé à Jira :',
+        projectData
+    );
+
+    const response =
+        await api
+            .asApp()
+            .requestJira(
+                route`/rest/api/3/project`,
+                {
+                    method: 'POST',
+
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+
+                    body: JSON.stringify(projectData),
+                }
+            );
+
+    console.log(
+        '[createProgram] Jira status:',
+        response.status
+    );
+
+    const responseText =
+        await response.text();
+
+    if (!response.ok) {
+        console.error(
+            '[createProgram] Jira error:',
+            responseText
+        );
+
+        throw new Error(
+            `Impossible de créer le projet Jira : ${response.status} ${responseText}`
+        );
+    }
+
+    const project =
+        JSON.parse(responseText);
+
+    console.log(
+        '[createProgram] Projet Jira créé :',
         project
     );
 
-    return project;
+    return {
+        id: project.id,
+        key: project.key,
+        self: project.self,
+        name: project.name,
+    };
 });
 
 /**
@@ -328,6 +447,135 @@ resolver.define('searchUsers', async (request) => {
         active: user.active,
     }));
 });
+const handleSubmit = async () => {
+    console.log('[FRONT] Création du programme démarrée');
+
+    const name = formData.name.trim();
+    const projectKey = formData.projectKey.trim().toUpperCase();
+
+    /*
+     * Validation du nom
+     */
+    if (!name) {
+        console.warn('[FRONT] Nom du programme obligatoire');
+        return;
+    }
+
+    /*
+     * Validation de la clé Jira
+     *
+     * Lettres et chiffres uniquement.
+     */
+    const projectKeyRegex = /^[A-Z0-9]+$/;
+
+    if (!projectKey) {
+        console.warn('[FRONT] Clé Jira obligatoire');
+        return;
+    }
+
+    if (!projectKeyRegex.test(projectKey)) {
+        console.warn(
+            '[FRONT] Clé Jira invalide :',
+            projectKey
+        );
+
+        return;
+    }
+
+    if (projectKey.length < 2 || projectKey.length > 10) {
+        console.warn(
+            '[FRONT] Longueur de clé Jira invalide'
+        );
+
+        return;
+    }
+
+    /*
+     * Validation du responsable
+     */
+    if (!formData.responsable) {
+        console.warn('[FRONT] Responsable obligatoire');
+        return;
+    }
+
+    /*
+     * Validation du type Jira
+     */
+    if (!formData.typeJira) {
+        console.warn('[FRONT] Type Jira obligatoire');
+        return;
+    }
+
+    try {
+        const payload = {
+            name,
+            projectKey,
+            description: formData.description,
+            axle: formData.axle,
+            responsable: formData.responsable,
+            typeJira: formData.typeJira,
+        };
+
+        console.log(
+            '[FRONT] Payload envoyé à createProgram :',
+            payload
+        );
+
+        const result = await invoke(
+            'createProgram',
+            payload
+        );
+
+        console.log(
+            '[FRONT] Projet Jira créé :',
+            result
+        );
+
+        const program = {
+            id: result.id,
+            jiraKey: result.key,
+
+            name,
+            projectKey,
+
+            status: formData.status,
+
+            budget: formData.budget,
+            budgetCons:
+                formData.budgetCons || '0FCFA',
+
+            startDate:
+                formData.startDate || '00/00/0000',
+
+            endDate:
+                formData.endDate || '00/00/0000',
+
+            axle: formData.axle,
+            responsable: formData.responsable,
+            sponsor: formData.sponsor,
+            typeJira: formData.typeJira,
+            description: formData.description,
+        };
+
+        setPrograms((prev) => [
+            program,
+            ...prev,
+        ]);
+
+        setSelectedId(program.id);
+
+        console.log(
+            '[FRONT] Programme ajouté au tableau :',
+            program
+        );
+
+    } catch (error) {
+        console.error(
+            '[FRONT] Erreur création programme :',
+            error
+        );
+    }
+};
 
 resolver.define('getIssues', async (request) => getIssues(request.payload));
 

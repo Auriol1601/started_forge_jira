@@ -4,53 +4,54 @@ import ProgramTablePanel from './ProgramTablePanel';
 import { invoke } from '@forge/bridge';
 
 const initialPrograms = [
-    {
-        id: 1,
-        name: 'Schema paiement',
-        status: 'EN COURS',
-        budgetCons: '2000000FCFA',
-        startDate: '03/08/2026',
-        endDate: '04/08/2026',
-        axle: 'AXE 1',
-        responsable: '',
-        sponsor: 'Ministère',
-        typeJira: 'software',
-        template: 'scrum',
-        description: 'Description ......',
-    },
-    {
-        id: 2,
-        name: 'GIM trilogie',
-        status: 'PLANIFIE',
-        budgetCons: '1800000FCFA',
-        startDate: '05/08/2026',
-        endDate: '12/08/2026',
-        axle: 'AXE 2',
-        responsable: '',
-        sponsor: 'Direction',
-        typeJira: 'software',
-        template: 'kanban',
-        description: 'Description ......',
-    },
-    {
-        id: 3,
-        name: 'GIM souvera',
-        status: 'TERMINE',
-        budgetCons: '2600000FCFA',
-        startDate: '01/07/2026',
-        endDate: '15/07/2026',
-        axle: 'AXE 3',
-        responsable: '',
-        sponsor: 'Coordination',
-        typeJira: 'software',
-        template: 'scrum',
-        description: 'Description ......',
-    },
+    // {
+    //     id: 1,
+    //     name: 'Schema paiement',
+    //     status: 'EN COURS',
+    //     budgetCons: '2000000FCFA',
+    //     startDate: '03/08/2026',
+    //     endDate: '04/08/2026',
+    //     axle: 'AXE 1',
+    //     responsable: '',
+    //     sponsor: 'Ministère',
+    //     typeJira: 'software',
+    //     template: 'scrum',
+    //     description: 'Description ......',
+    // },
+    // {
+    //     id: 2,
+    //     name: 'GIM trilogie',
+    //     status: 'PLANIFIE',
+    //     budgetCons: '1800000FCFA',
+    //     startDate: '05/08/2026',
+    //     endDate: '12/08/2026',
+    //     axle: 'AXE 2',
+    //     responsable: '',
+    //     sponsor: 'Direction',
+    //     typeJira: 'software',
+    //     template: 'kanban',
+    //     description: 'Description ......',
+    // },
+    // {
+    //     id: 3,
+    //     name: 'GIM souvera',
+    //     status: 'TERMINE',
+    //     budgetCons: '2600000FCFA',
+    //     startDate: '01/07/2026',
+    //     endDate: '15/07/2026',
+    //     axle: 'AXE 3',
+    //     responsable: '',
+    //     sponsor: 'Coordination',
+    //     typeJira: 'software',
+    //     template: 'scrum',
+    //     description: 'Description ......',
+    // },
 ];
 
 const emptyForm = {
     axle: '',
     name: '',
+    projectKey: '',
     responsable: '',
     sponsor: '',
     typeJira: 'software',
@@ -268,77 +269,77 @@ export default function ProgramPage() {
      *
      * =========================================================
      */
-    const handleSubmit = () => {
-        /*
-         * Validation minimale
-         */
-        if (!formData.name.trim()) {
-            console.warn(
-                '[FRONT] Création impossible : nom du programme manquant'
-            );
+    const handleSubmit = async () => {
+        console.log('[FRONT] Création du programme démarrée');
 
+        if (!formData.name.trim()) {
+            console.warn('[FRONT] Nom du programme obligatoire');
             return;
         }
 
-        /*
-         * Construction du programme local
-         */
-        const program = {
-            id: selectedId || Date.now(),
+        if (!formData.responsable) {
+            console.warn('[FRONT] Responsable obligatoire');
+            return;
+        }
 
-            name: formData.name,
+        if (!formData.typeJira) {
+            console.warn('[FRONT] Type Jira obligatoire');
+            return;
+        }
 
-            status: formData.status,
-
-            budget: formData.budget,
-
-            budgetCons:
-                formData.budgetCons || '0FCFA',
-
-            startDate:
-                formData.startDate || '00/00/0000',
-
-            endDate:
-                formData.endDate || '00/00/0000',
-
-            axle: formData.axle,
-
-            responsable: formData.responsable,
-
-            sponsor: formData.sponsor,
-
-            typeJira: formData.typeJira,
-
-            template: formData.template,
-
-            description: formData.description,
-        };
-
-        console.log(
-            '[FRONT] Programme local :',
-            program
-        );
-
-        /*
-         * Mise à jour de la table locale
-         */
-        setPrograms((prev) => {
-            const existing = prev.some(
-                (item) => item.id === selectedId
+        try {
+            console.log(
+                '[FRONT] Données envoyées à createProgram :',
+                formData
             );
 
-            if (existing) {
-                return prev.map((item) =>
-                    item.id === selectedId
-                        ? program
-                        : item
-                );
-            }
+            const result = await invoke('createProgram', {
+                name: formData.name,
+                description: formData.description,
+                axle: formData.axle,
+                responsable: formData.responsable,
+                typeJira: formData.typeJira,
+            });
 
-            return [program, ...prev];
-        });
+            console.log(
+                '[FRONT] Projet Jira créé :',
+                result
+            );
 
-        setSelectedId(program.id);
+            const program = {
+                id: result.id,
+                jiraKey: result.key,
+                name: formData.name,
+                status: formData.status,
+                budget: formData.budget,
+                budgetCons: formData.budgetCons || '0FCFA',
+                startDate: formData.startDate || '00/00/0000',
+                endDate: formData.endDate || '00/00/0000',
+                axle: formData.axle,
+                responsable: formData.responsable,
+                sponsor: formData.sponsor,
+                typeJira: formData.typeJira,
+                description: formData.description,
+            };
+
+            setPrograms((prev) => [
+                program,
+                ...prev,
+            ]);
+
+            setSelectedId(program.id);
+
+            console.log(
+                '[FRONT] Programme ajouté au tableau :',
+                program
+            );
+
+        } catch (error) {
+            console.error(
+                '[FRONT] Erreur création programme :',
+                error
+            );
+        }
     };
 
     /*

@@ -22,6 +22,7 @@ permissions:
     - write:jira-work
     - read:project:jira
     - write:project:jira
+    - manage:jira-configuration
 
 app:
   runtime:

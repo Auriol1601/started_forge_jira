@@ -51,6 +51,26 @@ export default function ProgramFormPanel({
                     />
                 </div>
             </div>
+            
+            {/* CLÉ DU PROJET JIRA */}
+            <div className="field-group">
+                <label>Clé du projet Jira</label>
+
+                <div className="input-shell">
+                    <input
+                        type="text"
+                        value={formData.projectKey}
+                        onChange={(e) =>
+                            onChange(
+                                'projectKey',
+                                e.target.value.toUpperCase()
+                            )
+                        }
+                        placeholder="Ex : GIMSP"
+                        maxLength={10}
+                    />
+                </div>
+            </div>
 
             {/* RESPONSABLE */}
             <div className="field-group">
@@ -268,7 +288,7 @@ export default function ProgramFormPanel({
                     className="primary-action"
                     onClick={onSubmit}
                 >
-                    Créer un programme
+                    Creer un programme
                 </button>
             </div>
 
