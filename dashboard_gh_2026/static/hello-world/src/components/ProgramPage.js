@@ -3,7 +3,6 @@ import ProgramFormPanel from './ProgramFormPanel';
 import ProgramTablePanel from './ProgramTablePanel';
 import { invoke } from '@forge/bridge';
 
-const initialPrograms = [];
 
 const emptyForm = {
     axle: '',
@@ -43,7 +42,7 @@ export default function ProgramPage() {
      * La persistance Jira viendra dans l'étape suivante.
      */
 
-    const [programs, setPrograms] = useState(initialPrograms);
+    const [programs, setPrograms] = useState([]);
 
     /*
      * =========================================================
@@ -63,6 +62,58 @@ export default function ProgramPage() {
     const [formData, setFormData] = useState({
         ...emptyForm,
     });
+    /*
+     * =========================================================
+     * CHARGEMENT DES PROJETS JIRA ( PROGRAMMES pour le GIM-UEMOA)
+     * =========================================================
+     */
+
+    useEffect(() => {
+    const loadProjects = async () => {
+        console.log(
+            '[FRONT] Chargement des projets Jira...'
+        );
+
+        try {
+            const result = await invoke(
+                'getProjects'
+            );
+
+            const safeProjects =
+                Array.isArray(result)
+                    ? result
+                    : [];
+
+            console.log(
+                '[FRONT] Projets Jira retournés :',
+                safeProjects
+            );
+
+            console.log(
+                '[FRONT] Nombre de projets Jira :',
+                safeProjects.length
+            );
+
+            console.table(
+                safeProjects
+            );
+
+            setPrograms(
+                safeProjects
+            );
+
+        } catch (error) {
+            console.error(
+                '[FRONT] Erreur récupération projets Jira :',
+                error
+            );
+
+            setPrograms([]);
+        }
+    };
+
+    loadProjects();
+}, []);
 
     /*
      * =========================================================
