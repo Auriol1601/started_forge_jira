@@ -7,6 +7,7 @@ export default function ProgramFormPanel({
     projectTypes = [],
     onChange,
     onSubmit,
+    isEditing = false
 }) {
     return (
         <aside className="program-form-panel">
@@ -17,8 +18,10 @@ export default function ProgramFormPanel({
 
                 <div className="input-shell input-shell-select">
                     <select
-                        value={formData.axle}
-                        onChange={(e) => onChange('axle', e.target.value)}
+                        value={formData.axle || ''}
+                        onChange={(e) =>
+                            onChange('axle', e.target.value)
+                        }
                     >
                         <option value="">
                             Sélectionner un axe stratégique
@@ -43,7 +46,7 @@ export default function ProgramFormPanel({
                 <div className="input-shell">
                     <input
                         type="text"
-                        value={formData.name}
+                        value={formData.name || ''}
                         onChange={(e) =>
                             onChange('name', e.target.value)
                         }
@@ -51,7 +54,7 @@ export default function ProgramFormPanel({
                     />
                 </div>
             </div>
-            
+
             {/* CLÉ DU PROJET JIRA */}
             <div className="field-group">
                 <label>Clé du projet Jira</label>
@@ -59,7 +62,7 @@ export default function ProgramFormPanel({
                 <div className="input-shell">
                     <input
                         type="text"
-                        value={formData.projectKey}
+                        value={formData.projectKey || ''}
                         onChange={(e) =>
                             onChange(
                                 'projectKey',
@@ -68,6 +71,7 @@ export default function ProgramFormPanel({
                         }
                         placeholder="Ex : GIMSP"
                         maxLength={10}
+                        disabled={isEditing}
                     />
                 </div>
             </div>
@@ -78,9 +82,12 @@ export default function ProgramFormPanel({
 
                 <div className="input-shell input-shell-select">
                     <select
-                        value={formData.responsable}
+                        value={formData.responsable || ''}
                         onChange={(e) =>
-                            onChange('responsable', e.target.value)
+                            onChange(
+                                'responsable',
+                                e.target.value
+                            )
                         }
                     >
                         <option value="">
@@ -106,9 +113,12 @@ export default function ProgramFormPanel({
                 <div className="input-shell">
                     <input
                         type="text"
-                        value={formData.sponsor}
+                        value={formData.sponsor || ''}
                         onChange={(e) =>
-                            onChange('sponsor', e.target.value)
+                            onChange(
+                                'sponsor',
+                                e.target.value
+                            )
                         }
                         placeholder="Nom du sponsor"
                     />
@@ -121,10 +131,14 @@ export default function ProgramFormPanel({
 
                 <div className="input-shell input-shell-select">
                     <select
-                        value={formData.typeJira}
+                        value={formData.typeJira || ''}
                         onChange={(e) =>
-                            onChange('typeJira', e.target.value)
+                            onChange(
+                                'typeJira',
+                                e.target.value
+                            )
                         }
+                        disabled={isEditing}
                     >
                         <option value="">
                             Sélectionner un type
@@ -148,9 +162,12 @@ export default function ProgramFormPanel({
 
                 <div className="input-shell input-shell-select">
                     <select
-                        value={formData.template}
+                        value={formData.template || ''}
                         onChange={(e) =>
-                            onChange('template', e.target.value)
+                            onChange(
+                                'template',
+                                e.target.value
+                            )
                         }
                     >
                         <option value="">
@@ -177,9 +194,12 @@ export default function ProgramFormPanel({
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
-                            value={formData.startDate}
+                            value={formData.startDate || ''}
                             onChange={(e) =>
-                                onChange('startDate', e.target.value)
+                                onChange(
+                                    'startDate',
+                                    e.target.value
+                                )
                             }
                         />
                     </div>
@@ -191,9 +211,12 @@ export default function ProgramFormPanel({
                     <div className="input-shell input-shell-date">
                         <input
                             type="date"
-                            value={formData.endDate}
+                            value={formData.endDate || ''}
                             onChange={(e) =>
-                                onChange('endDate', e.target.value)
+                                onChange(
+                                    'endDate',
+                                    e.target.value
+                                )
                             }
                         />
                     </div>
@@ -209,9 +232,12 @@ export default function ProgramFormPanel({
 
                     <div className="input-shell input-shell-select">
                         <select
-                            value={formData.status}
+                            value={formData.status || ''}
                             onChange={(e) =>
-                                onChange('status', e.target.value)
+                                onChange(
+                                    'status',
+                                    e.target.value
+                                )
                             }
                         >
                             <option value="EN COURS">
@@ -239,9 +265,12 @@ export default function ProgramFormPanel({
                     <div className="input-shell">
                         <input
                             type="text"
-                            value={formData.budget}
+                            value={formData.budget || ''}
                             onChange={(e) =>
-                                onChange('budget', e.target.value)
+                                onChange(
+                                    'budget',
+                                    e.target.value
+                                )
                             }
                             placeholder="BUDGET"
                         />
@@ -257,9 +286,12 @@ export default function ProgramFormPanel({
                 <div className="input-shell">
                     <input
                         type="text"
-                        value={formData.budgetCons}
+                        value={formData.budgetCons || ''}
                         onChange={(e) =>
-                            onChange('budgetCons', e.target.value)
+                            onChange(
+                                'budgetCons',
+                                e.target.value
+                            )
                         }
                         placeholder="BUDGET CONSO"
                     />
@@ -272,9 +304,12 @@ export default function ProgramFormPanel({
 
                 <div className="input-shell textarea-shell">
                     <textarea
-                        value={formData.description}
+                        value={formData.description || ''}
                         onChange={(e) =>
-                            onChange('description', e.target.value)
+                            onChange(
+                                'description',
+                                e.target.value
+                            )
                         }
                         placeholder="Description ......"
                     />
@@ -288,7 +323,9 @@ export default function ProgramFormPanel({
                     className="primary-action"
                     onClick={onSubmit}
                 >
-                    Creer un programme
+                    {isEditing
+                        ? 'Modifier le programme'
+                        : 'Créer un programme'}
                 </button>
             </div>
 
