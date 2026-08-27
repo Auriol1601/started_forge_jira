@@ -149,7 +149,9 @@ export default function ProgramFormPanel({
                                 key={type.key}
                                 value={type.key}
                             >
-                                {type.formattedKey}
+                                {type.name ||
+                                    type.formattedKey ||
+                                    type.key}
                             </option>
                         ))}
                     </select>
