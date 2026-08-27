@@ -1104,6 +1104,10 @@ export default function ProgramPage() {
                             users
                         }
 
+                        projectTypes={
+                            projectTypes
+                        }
+
                         onChange={
                             updateField
                         }

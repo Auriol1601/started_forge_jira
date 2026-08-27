@@ -215,7 +215,60 @@ html,body,#root{height:100%;}
 .input-shell-select select{
     appearance:none;
     background-image:none;
+    height:46px;
+    padding:0 38px 0 2px;
     cursor:pointer;
+}
+
+.input-shell-select{
+    position:relative;
+    border-color:rgba(40,52,120,0.18);
+    transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+
+.input-shell-select::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    right:16px;
+    width:8px;
+    height:8px;
+    border-right:2px solid var(--primary-dark);
+    border-bottom:2px solid var(--primary-dark);
+    transform:translateY(-65%) rotate(45deg);
+    pointer-events:none;
+    transition:transform .18s ease,border-color .18s ease;
+}
+
+.input-shell-select:focus-within{
+    border-color:var(--primary-dark);
+    box-shadow:0 0 0 3px rgba(40,52,120,0.14);
+}
+
+.input-shell-select:focus-within::after{
+    border-color:var(--primary-dark);
+    transform:translateY(-25%) rotate(225deg);
+}
+
+.input-shell-select select:disabled{
+    color:#7d88a2;
+    cursor:not-allowed;
+}
+
+.input-shell-select:has(select:disabled){
+    background:#eef1f7;
+    cursor:not-allowed;
+}
+
+.input-shell-select:has(select:disabled)::after{
+    border-color:#8c9bb4;
+}
+
+.input-shell-select option{
+    color:#1d2b59;
+    background:#ffffff;
+    font-family:inherit;
+    font-weight:600;
 }
 
 .input-shell-date input{color:#1d2b59}
