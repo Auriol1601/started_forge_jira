@@ -11,7 +11,7 @@ export default function Header({ onToggleSidebar, onGoHome, onCreateProgram }) {
             <button className="brand" type="button" onClick={onGoHome}>GIM-HZ 2026</button>
             <div className="spacer" />
             <button className="create-btn" aria-label="creer programme" onClick={onCreateProgram}>
-                creer programme
+                CREER UN PROGRAMME
             </button>
         </header>
     );
