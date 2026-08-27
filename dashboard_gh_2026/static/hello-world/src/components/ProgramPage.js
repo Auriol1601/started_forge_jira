@@ -261,24 +261,13 @@ export default function ProgramPage() {
      * =========================================================
      */
 
-    const handleSelectProgram = (
-        program
-    ) => {
-        console.log(
-            '[FRONT] Programme sélectionné :',
-            program
-        );
-
-        setSelectedId(
-            program.id
-        );
+    const handleSelectProgram = (program) => {
+        setSelectedId(program.id);
 
         setFormData({
             ...emptyForm,
             ...program,
-
-            budget:
-                program.budget || '',
+            budget: program.budget || '',
         });
     };
 
