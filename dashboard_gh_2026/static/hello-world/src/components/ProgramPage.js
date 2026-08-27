@@ -975,66 +975,120 @@ export default function ProgramPage() {
      * =========================================================
      */
 
-    const handleDeleteConfirmed = () => {
+    const handleDeleteConfirmed = async () => {
 
-        if (
-            !pendingDelete
-        ) {
+        if (!pendingDelete) {
             return;
         }
 
-
-        const deletedId =
-            pendingDelete.id;
-
+        const deletedId = pendingDelete.id;
 
         console.log(
-            '[FRONT] Suppression locale du programme :',
-            deletedId
+            '[FRONT] Suppression du programme démarrée :',
+            pendingDelete
         );
 
-
         /*
-         * Suppression du tableau.
+         * =========================================================
+         * APPEL BACKEND
+         * =========================================================
          */
 
-        setPrograms((prev) =>
-            prev.filter(
-                (item) =>
-                    item.id !== deletedId
-            )
-        );
+        try {
 
-
-        /*
-         * Fermeture de la modale.
-         */
-
-        setPendingDelete(
-            null
-        );
-
-
-        /*
-         * Si le programme supprimé était sélectionné,
-         * on sort également du mode modification.
-         */
-
-        if (
-            selectedId === deletedId
-        ) {
-
-            setSelectedId(
-                null
+            const result = await invoke(
+                'deleteProgram',
+                {
+                    projectId: deletedId,
+                }
             );
 
-            setIsEditing(
-                false
+            console.log(
+                '[FRONT] Projet Jira supprimé :',
+                result
             );
 
-            setFormData({
-                ...emptyForm,
-            });
+            /*
+             * =====================================================
+             * SUPPRESSION DU TABLEAU LOCAL
+             * =====================================================
+             *
+             * On ne retire le programme du tableau
+             * QU'APRÈS confirmation de Jira.
+             */
+
+            setPrograms((prev) =>
+                prev.filter(
+                    (item) =>
+                        item.id !== deletedId
+                )
+            );
+
+            console.log(
+                '[FRONT] Programme supprimé du tableau :',
+                deletedId
+            );
+
+            /*
+             * =====================================================
+             * FERMETURE DE LA MODALE
+             * =====================================================
+             */
+
+            setPendingDelete(null);
+
+            /*
+             * =====================================================
+             * SI LE PROGRAMME SUPPRIMÉ ÉTAIT SÉLECTIONNÉ
+             * =====================================================
+             */
+
+            if (selectedId === deletedId) {
+
+                setSelectedId(null);
+
+                setIsEditing(false);
+
+                setFormData({
+                    ...emptyForm,
+
+                    axle:
+                        categories.length > 0
+                            ? categories[0].id
+                            : '',
+
+                    typeJira:
+                        projectTypes.length > 0
+                            ? projectTypes[0].key
+                            : '',
+                });
+            }
+
+            console.log(
+                '[FRONT] Suppression du programme terminée'
+            );
+
+        } catch (error) {
+
+            console.error(
+                '[FRONT] Erreur suppression programme :',
+                error
+            );
+
+            /*
+             * IMPORTANT :
+             * Le programme reste dans le tableau
+             * si Jira refuse la suppression.
+             *
+             * La modale reste également ouverte afin
+             * que l'utilisateur puisse comprendre que
+             * la suppression n'a pas abouti.
+             */
+
+            alert(
+                error?.message ||
+                'Impossible de supprimer le programme.'
+            );
         }
     };
 
