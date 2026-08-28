@@ -23,6 +23,8 @@ permissions:
     - read:project:jira
     - write:project:jira
     - manage:jira-configuration
+    - manage:jira-project
+    - storage:app
 
 app:
   runtime:

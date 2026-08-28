@@ -1,582 +1,1771 @@
 import Resolver from '@forge/resolver';
 import api, { route } from '@forge/api';
+import { kvs } from '@forge/kvs';
 import { getIssues } from './forge/handlers.js';
 
 const resolver = new Resolver();
 
+
 /**
- * Test du resolver existant
+ * =========================================================
+ * TEST RESOLVER
+ * =========================================================
  */
+
 resolver.define('getText', (req) => {
+
     console.log(req);
 
     return 'Hello world!';
 });
+
+
 /**
- * Test creer un projet jira .
+ * =========================================================
+ * MÉTADONNÉES DES PROGRAMMES
+ * =========================================================
+ *
+ * Les informations métier qui ne sont pas directement
+ * stockées dans Jira sont conservées dans Forge KVS.
+ *
+ * Le projectId Jira sert de clé de rattachement.
+ *
+ * Métadonnées :
+ *
+ * - sponsor
+ * - startDate
+ * - endDate
+ * - status
+ * - budget
+ * - budgetCons
+ * - typeJira
+ * - template
+ *
+ * L'axe (axle) est stocké côté Jira comme catégorie.
+ * =========================================================
  */
 
-resolver.define('createProgram', async (request) => {
-    console.log('[createProgram] START');
 
-    const data = request.payload || {};
+/**
+ * =========================================================
+ * CONSTRUIRE LA CLÉ STORAGE
+ * =========================================================
+ */
+
+const getProgramMetadataKey = (projectId) =>
+    `program-metadata:${projectId}`;
+
+
+/**
+ * =========================================================
+ * MÉTADONNÉES VIDES
+ * =========================================================
+ */
+
+const getEmptyProgramMetadata = (projectId) => ({
+
+    projectId,
+
+    sponsor: '',
+
+    startDate: '',
+
+    endDate: '',
+
+    status: 'EN COURS',
+
+    budget: '',
+
+    budgetCons: '',
+
+    typeJira: '',
+
+    template: '',
+});
+
+
+/**
+ * =========================================================
+ * SAUVEGARDER LES MÉTADONNÉES
+ * =========================================================
+ */
+
+const saveProgramMetadata = async (
+    projectId,
+    metadata = {}
+) => {
+
+    if (!projectId) {
+
+        throw new Error(
+            'Impossible de sauvegarder les métadonnées : projectId manquant.'
+        );
+    }
+
+
+    const key =
+        getProgramMetadataKey(projectId);
+
+
+    const data = {
+
+        projectId,
+
+        sponsor:
+            metadata.sponsor || '',
+
+        startDate:
+            metadata.startDate || '',
+
+        endDate:
+            metadata.endDate || '',
+
+        status:
+            metadata.status ||
+            'EN COURS',
+
+        budget:
+            metadata.budget || '',
+
+        budgetCons:
+            metadata.budgetCons || '',
+
+        typeJira:
+            metadata.typeJira || '',
+
+        template:
+            metadata.template || '',
+    };
+
 
     console.log(
-        '[createProgram] Payload reçu :',
+        '[metadata] Sauvegarde KVS :',
+        {
+            key,
+            data,
+        }
+    );
+
+
+    await kvs.set(
+        key,
         data
     );
 
-    const {
-        name,
-        projectKey,
-        description,
-        axle,
-        responsable,
-        typeJira,
-    } = data;
-
-    console.log('[createProgram] projectKey brut :', projectKey);
-    console.log('[createProgram] typeof projectKey :', typeof projectKey);
-    console.log('[createProgram] name :', name);
-    console.log('[createProgram] responsable :', responsable);
-    console.log('[createProgram] typeJira :', typeJira);
-
-    /*
-     * ==============================
-     * VALIDATION
-     * ==============================
-     */
-
-    if (!name || !name.trim()) {
-        throw new Error(
-            'Le nom du programme est obligatoire.'
-        );
-    }
-
-    if (!projectKey || !projectKey.trim()) {
-        throw new Error(
-            'La clé du projet Jira est obligatoire.'
-        );
-    }
-
-    const normalizedProjectKey =
-        projectKey.trim().toUpperCase();
-
-    /*
-     * Jira :
-     * uniquement lettres et chiffres.
-     */
-    if (!/^[A-Z0-9]+$/.test(normalizedProjectKey)) {
-        throw new Error(
-            'La clé Jira doit contenir uniquement des lettres et des chiffres.'
-        );
-    }
-
-    if (
-        normalizedProjectKey.length < 2 ||
-        normalizedProjectKey.length > 10
-    ) {
-        throw new Error(
-            'La clé Jira doit contenir entre 2 et 10 caractères.'
-        );
-    }
-
-    if (!responsable) {
-        throw new Error(
-            'Le responsable est obligatoire.'
-        );
-    }
-
-    if (!typeJira) {
-        throw new Error(
-            'Le type Jira est obligatoire.'
-        );
-    }
-
-    /*
-     * ==============================
-     * VÉRIFICATION DE LA CLÉ
-     * ==============================
-     */
 
     console.log(
-        '[createProgram] Vérification de la clé :',
-        normalizedProjectKey
+        '[metadata] Sauvegarde KVS terminée :',
+        projectId
     );
 
-    const existingProjectResponse =
-        await api
-            .asApp()
-            .requestJira(
-                route`/rest/api/3/project/${normalizedProjectKey}`,
-                {
-                    headers: {
-                        Accept: 'application/json',
-                    },
-                }
-            );
 
-    console.log(
-        '[createProgram] Vérification clé status:',
-        existingProjectResponse.status
-    );
+    return data;
+};
 
-    /*
-     * 200 = projet déjà existant
-     */
-    if (existingProjectResponse.ok) {
-        throw new Error(
-            `La clé Jira "${normalizedProjectKey}" est déjà utilisée.`
+
+/**
+ * =========================================================
+ * RÉCUPÉRER LES MÉTADONNÉES
+ * =========================================================
+ */
+
+const getProgramMetadata = async (
+    projectId
+) => {
+
+    if (!projectId) {
+
+        return null;
+    }
+
+
+    const key =
+        getProgramMetadataKey(projectId);
+
+
+    const metadata =
+        await kvs.get(key);
+
+
+    if (!metadata) {
+
+        return getEmptyProgramMetadata(
+            projectId
         );
     }
 
-    /*
-     * ==============================
-     * CRÉATION DU PROJET
-     * ==============================
-     */
 
-    const projectData = {
-        name: name.trim(),
-        key: normalizedProjectKey,
-        projectTypeKey: typeJira,
-        description: description || '',
-        leadAccountId: responsable,
+    return {
+
+        ...getEmptyProgramMetadata(
+            projectId
+        ),
+
+        ...metadata,
+
+        projectId,
     };
+};
 
-    /*
-     * Axe stratégique = catégorie Jira
-     */
-    if (axle) {
-        projectData.categoryId = Number(axle);
+
+/**
+ * =========================================================
+ * SUPPRIMER LES MÉTADONNÉES
+ * =========================================================
+ */
+
+const deleteProgramMetadata = async (
+    projectId
+) => {
+
+    if (!projectId) {
+
+        return;
     }
 
+
+    const key =
+        getProgramMetadataKey(projectId);
+
+
     console.log(
-        '[createProgram] Payload envoyé à Jira :',
-        projectData
+        '[metadata] Suppression KVS :',
+        key
     );
 
-    const response =
-        await api
-            .asApp()
-            .requestJira(
-                route`/rest/api/3/project`,
+
+    await kvs.delete(
+        key
+    );
+
+
+    console.log(
+        '[metadata] Suppression KVS terminée :',
+        projectId
+    );
+};
+
+
+/**
+ * =========================================================
+ * CRÉER UN PROJET / PROGRAMME JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'createProgram',
+    async (request) => {
+
+        console.log(
+            '[createProgram] START'
+        );
+
+
+        const data =
+            request.payload || {};
+
+
+        console.log(
+            '[createProgram] Payload reçu :',
+            data
+        );
+
+
+        const {
+
+            name,
+
+            projectKey,
+
+            description,
+
+            axle,
+
+            responsable,
+
+            typeJira,
+
+            sponsor,
+
+            startDate,
+
+            endDate,
+
+            status,
+
+            budget,
+
+            budgetCons,
+
+            template,
+
+        } = data;
+
+
+        /**
+         * =====================================================
+         * VALIDATION
+         * =====================================================
+         */
+
+        if (
+            !name ||
+            !name.trim()
+        ) {
+
+            throw new Error(
+                'Le nom du programme est obligatoire.'
+            );
+        }
+
+
+        if (
+            !projectKey ||
+            !projectKey.trim()
+        ) {
+
+            throw new Error(
+                'La clé du projet Jira est obligatoire.'
+            );
+        }
+
+
+        const normalizedProjectKey =
+            projectKey
+                .trim()
+                .toUpperCase();
+
+
+        /**
+         * =====================================================
+         * VALIDATION CLÉ JIRA
+         * =====================================================
+         */
+
+        if (
+            !/^[A-Z0-9]+$/.test(
+                normalizedProjectKey
+            )
+        ) {
+
+            throw new Error(
+                'La clé Jira doit contenir uniquement des lettres et des chiffres.'
+            );
+        }
+
+
+        if (
+            normalizedProjectKey.length < 2 ||
+            normalizedProjectKey.length > 10
+        ) {
+
+            throw new Error(
+                'La clé Jira doit contenir entre 2 et 10 caractères.'
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * RESPONSABLE
+         * =====================================================
+         */
+
+        if (!responsable) {
+
+            throw new Error(
+                'Le responsable est obligatoire.'
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * TYPE JIRA
+         * =====================================================
+         */
+
+        if (!typeJira) {
+
+            throw new Error(
+                'Le type Jira est obligatoire.'
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * VÉRIFICATION DE LA CLÉ
+         * =====================================================
+         */
+
+        console.log(
+            '[createProgram] Vérification de la clé :',
+            normalizedProjectKey
+        );
+
+
+        const existingProjectResponse =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project/${normalizedProjectKey}`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[createProgram] Vérification clé status:',
+            existingProjectResponse.status
+        );
+
+
+        /**
+         * 200 = projet déjà existant.
+         */
+
+        if (
+            existingProjectResponse.ok
+        ) {
+
+            throw new Error(
+                `La clé Jira "${normalizedProjectKey}" est déjà utilisée.`
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * CRÉATION DU PROJET JIRA
+         * =====================================================
+         */
+
+        const projectData = {
+
+            name:
+                name.trim(),
+
+            key:
+                normalizedProjectKey,
+
+            projectTypeKey:
+                typeJira,
+
+            description:
+                description || '',
+
+            leadAccountId:
+                responsable,
+        };
+
+
+        /**
+         * Axe stratégique = catégorie Jira.
+         */
+
+        if (axle) {
+
+            const numericAxle =
+                Number(axle);
+
+
+            if (
+                Number.isNaN(
+                    numericAxle
+                )
+            ) {
+
+                throw new Error(
+                    'L’axe stratégique sélectionné est invalide.'
+                );
+            }
+
+
+            projectData.categoryId =
+                numericAxle;
+        }
+
+
+        console.log(
+            '[createProgram] Payload envoyé à Jira :',
+            projectData
+        );
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project`,
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            Accept:
+                                'application/json',
+
+                            'Content-Type':
+                                'application/json',
+                        },
+
+                        body:
+                            JSON.stringify(
+                                projectData
+                            ),
+                    }
+                );
+
+
+        console.log(
+            '[createProgram] Jira status:',
+            response.status
+        );
+
+
+        const responseText =
+            await response.text();
+
+
+        if (!response.ok) {
+
+            console.error(
+                '[createProgram] Jira error:',
+                responseText
+            );
+
+
+            throw new Error(
+                `Impossible de créer le projet Jira : ${response.status} ${responseText}`
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * PARSING RÉPONSE JIRA
+         * =====================================================
+         */
+
+        let project;
+
+
+        try {
+
+            project =
+                JSON.parse(
+                    responseText
+                );
+
+        } catch (error) {
+
+            console.error(
+                '[createProgram] Erreur parsing Jira:',
+                error
+            );
+
+
+            throw new Error(
+                'Réponse Jira invalide lors de la création du projet.'
+            );
+        }
+
+
+        console.log(
+            '[createProgram] Projet Jira créé :',
+            project
+        );
+
+
+        /**
+         * =====================================================
+         * SAUVEGARDE MÉTADONNÉES
+         * =====================================================
+         */
+
+        const metadata =
+            await saveProgramMetadata(
+                project.id,
                 {
-                    method: 'POST',
 
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
+                    sponsor,
 
-                    body: JSON.stringify(projectData),
+                    startDate,
+
+                    endDate,
+
+                    status,
+
+                    budget,
+
+                    budgetCons,
+
+                    typeJira,
+
+                    template,
                 }
             );
 
-    console.log(
-        '[createProgram] Jira status:',
-        response.status
-    );
 
-    const responseText =
-        await response.text();
+        console.log(
+            '[createProgram] Métadonnées sauvegardées :',
+            metadata
+        );
 
-    if (!response.ok) {
-        console.error(
-            '[createProgram] Jira error:',
+
+        /**
+         * =====================================================
+         * RETOUR
+         * =====================================================
+         */
+
+        return {
+
+            id:
+                project.id,
+
+            key:
+                project.key,
+
+            self:
+                project.self,
+
+            name:
+                project.name,
+
+            metadata,
+        };
+    }
+);
+
+
+/**
+ * =========================================================
+ * MODIFIER UN PROJET / PROGRAMME JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'updateProgram',
+    async (request) => {
+
+        console.log(
+            '[updateProgram] START'
+        );
+
+
+        const data =
+            request.payload || {};
+
+
+        console.log(
+            '[updateProgram] Payload reçu :',
+            data
+        );
+
+
+        const {
+
+            projectId,
+
+            projectKey,
+
+            name,
+
+            description,
+
+            axle,
+
+            responsable,
+
+            sponsor,
+
+            startDate,
+
+            endDate,
+
+            status,
+
+            budget,
+
+            budgetCons,
+
+            typeJira,
+
+            template,
+
+        } = data;
+
+
+        /**
+         * =====================================================
+         * VALIDATION
+         * =====================================================
+         */
+
+        if (!projectId) {
+
+            throw new Error(
+                'L’identifiant du projet Jira est obligatoire.'
+            );
+        }
+
+
+        if (
+            !name ||
+            !name.trim()
+        ) {
+
+            throw new Error(
+                'Le nom du programme est obligatoire.'
+            );
+        }
+
+
+        if (!responsable) {
+
+            throw new Error(
+                'Le responsable est obligatoire.'
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * PAYLOAD JIRA
+         * =====================================================
+         */
+
+        const projectData = {
+
+            name:
+                name.trim(),
+
+            description:
+                description || '',
+
+            leadAccountId:
+                responsable,
+        };
+
+
+        /**
+         * Axe stratégique = catégorie Jira.
+         */
+
+        if (axle) {
+
+            const numericAxle =
+                Number(axle);
+
+
+            if (
+                Number.isNaN(
+                    numericAxle
+                )
+            ) {
+
+                throw new Error(
+                    'L’axe stratégique sélectionné est invalide.'
+                );
+            }
+
+
+            projectData.categoryId =
+                numericAxle;
+        }
+
+
+        console.log(
+            '[updateProgram] Payload envoyé à Jira :',
+            projectData
+        );
+
+
+        /**
+         * =====================================================
+         * MISE À JOUR JIRA
+         * =====================================================
+         */
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project/${projectId}`,
+                    {
+
+                        method: 'PUT',
+
+                        headers: {
+
+                            Accept:
+                                'application/json',
+
+                            'Content-Type':
+                                'application/json',
+                        },
+
+                        body:
+                            JSON.stringify(
+                                projectData
+                            ),
+                    }
+                );
+
+
+        console.log(
+            '[updateProgram] Jira status:',
+            response.status
+        );
+
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            '[updateProgram] Jira response:',
             responseText
         );
 
-        throw new Error(
-            `Impossible de créer le projet Jira : ${response.status} ${responseText}`
-        );
-    }
 
-    const project =
-        JSON.parse(responseText);
+        if (!response.ok) {
 
-    console.log(
-        '[createProgram] Projet Jira créé :',
-        project
-    );
+            console.error(
+                '[updateProgram] Jira error:',
+                responseText
+            );
 
-    return {
-        id: project.id,
-        key: project.key,
-        self: project.self,
-        name: project.name,
-    };
-});
 
-/**
- * Test d'autorisation compte jira associez pour creer un projet .
- */
+            throw new Error(
+                `Impossible de modifier le projet Jira : ${response.status} ${responseText}`
+            );
+        }
 
-resolver.define('checkProjectCreationPermission', async () => {
-    console.log('[checkProjectCreationPermission] START');
 
-    const response = await api
-        .asApp()
-        .requestJira(
-            route`/rest/api/3/mypermissions?permissions=ADMINISTER`,
-            {
-                headers: {
-                    Accept: 'application/json',
-                },
+        /**
+         * =====================================================
+         * PARSING
+         * =====================================================
+         */
+
+        let project = {};
+
+
+        if (responseText) {
+
+            try {
+
+                project =
+                    JSON.parse(
+                        responseText
+                    );
+
+            } catch (error) {
+
+                console.warn(
+                    '[updateProgram] Réponse Jira non JSON :',
+                    responseText
+                );
+
+                project = {};
             }
+        }
+
+
+        console.log(
+            '[updateProgram] Projet Jira modifié :',
+            project
         );
 
-    console.log(
-        '[checkProjectCreationPermission] Jira status:',
-        response.status
-    );
 
-    if (!response.ok) {
-        const errorText = await response.text();
+        /**
+         * =====================================================
+         * MISE À JOUR DES MÉTADONNÉES
+         * =====================================================
+         */
 
-        console.error(
-            '[checkProjectCreationPermission] Jira error:',
-            errorText
+        const metadata =
+            await saveProgramMetadata(
+                projectId,
+                {
+
+                    sponsor,
+
+                    startDate,
+
+                    endDate,
+
+                    status,
+
+                    budget,
+
+                    budgetCons,
+
+                    typeJira,
+
+                    template,
+                }
+            );
+
+
+        console.log(
+            '[updateProgram] Métadonnées mises à jour :',
+            metadata
         );
 
-        throw new Error(
-            `Impossible de vérifier les permissions Jira : ${response.status} ${errorText}`
-        );
-    }
 
-    const permissions = await response.json();
+        /**
+         * =====================================================
+         * RETOUR
+         * =====================================================
+         */
 
-    console.log(
-        '[checkProjectCreationPermission] Permissions:',
-        permissions
-    );
+        return {
 
-    return permissions;
-});
+            id:
+                project.id ||
+                projectId,
 
-/**
- * Récupère les templates de projets Jira disponibles.
- */
-resolver.define('getProjectTemplates', async () => {
-    console.log('[getProjectTemplates] START');
+            key:
+                project.key ||
+                projectKey ||
+                '',
 
-    const response = await api
-        .asApp()
-        .requestJira(
-            route`/rest/api/3/project-templates`,
-            {
-                headers: {
-                    Accept: 'application/json',
-                },
-            }
-        );
+            self:
+                project.self ||
+                '',
 
-    console.log(
-        '[getProjectTemplates] Jira status:',
-        response.status
-    );
+            name:
+                project.name ||
+                name,
 
-    if (!response.ok) {
-        const errorText = await response.text();
-
-        console.error(
-            '[getProjectTemplates] Jira error:',
-            errorText
-        );
-
-        throw new Error(
-            `Impossible de récupérer les templates Jira : ${response.status} ${errorText}`
-        );
-    }
-
-    const templates = await response.json();
-
-    console.log(
-        '[getProjectTemplates] Jira templates:',
-        templates
-    );
-
-    return templates;
-});
-
-/**
- * Vérifie les types de projets Jira accessibles
- * à l'application/utilisateur.
- */
-resolver.define('getAccessibleProjectTypes', async () => {
-    console.log('[getAccessibleProjectTypes] START');
-
-    const response = await api
-        .asApp()
-        .requestJira(
-            route`/rest/api/3/project/type/accessible`,
-            {
-                headers: {
-                    Accept: 'application/json',
-                },
-            }
-        );
-
-    console.log(
-        '[getAccessibleProjectTypes] Jira status:',
-        response.status
-    );
-
-    if (!response.ok) {
-        const errorText = await response.text();
-
-        console.error(
-            '[getAccessibleProjectTypes] Jira error:',
-            errorText
-        );
-
-        throw new Error(
-            `Impossible de récupérer les types de projets Jira : ${response.status} ${errorText}`
-        );
-    }
-
-    const projectTypes = await response.json();
-
-    console.log(
-        '[getAccessibleProjectTypes] Jira project types:',
-        projectTypes
-    );
-
-    return projectTypes;
-});
-
-/**
- * Récupère les catégories de projets Jira.
- *
- * Ces catégories représentent les axes stratégiques
- * dans notre interface personnalisée.
- */
-resolver.define('getProjectCategories', async () => {
-    console.log('[getProjectCategories] START');
-
-    const response = await api
-        .asApp()
-        .requestJira(route`/rest/api/3/projectCategory`, {
-            headers: {
-                Accept: 'application/json',
-            },
-        });
-
-    console.log(
-        '[getProjectCategories] Jira status:',
-        response.status
-    );
-
-    if (!response.ok) {
-        const errorText = await response.text();
-
-        console.error(
-            '[getProjectCategories] Jira error:',
-            errorText
-        );
-
-        throw new Error(
-            `Impossible de récupérer les catégories Jira : ${response.status} ${errorText}`
-        );
-    }
-
-    const categories = await response.json();
-
-    console.log(
-        '[getProjectCategories] Jira categories:',
-        categories
-    );
-
-    return categories.map((category) => ({
-        id: category.id,
-        name: category.name,
-        description: category.description || '',
-    }));
-});
-
-resolver.define('searchUsers', async (request) => {
-    const query = request.payload?.query?.trim() || '';
-
-    console.log('[searchUsers] START');
-    console.log('[searchUsers] Query:', query);
-
-    if (!query) {
-        return [];
-    }
-
-    const response = await api
-        .asApp()
-        .requestJira(
-            route`/rest/api/3/user/search?query=${query}&maxResults=20`,
-            {
-                headers: {
-                    Accept: 'application/json',
-                },
-            }
-        );
-
-    console.log(
-        '[searchUsers] Jira status:',
-        response.status
-    );
-
-    if (!response.ok) {
-        const errorText = await response.text();
-
-        console.error(
-            '[searchUsers] Jira error:',
-            errorText
-        );
-
-        throw new Error(
-            `Impossible de rechercher les utilisateurs Jira : ${response.status} ${errorText}`
-        );
-    }
-
-    const users = await response.json();
-
-    console.log(
-        '[searchUsers] Users returned:',
-        users
-    );
-
-    return users.map((user) => ({
-        accountId: user.accountId,
-        displayName: user.displayName,
-        emailAddress: user.emailAddress || '',
-        active: user.active,
-    }));
-});
-const handleSubmit = async () => {
-    console.log('[FRONT] Création du programme démarrée');
-
-    const name = formData.name.trim();
-    const projectKey = formData.projectKey.trim().toUpperCase();
-
-    /*
-     * Validation du nom
-     */
-    if (!name) {
-        console.warn('[FRONT] Nom du programme obligatoire');
-        return;
-    }
-
-    /*
-     * Validation de la clé Jira
-     *
-     * Lettres et chiffres uniquement.
-     */
-    const projectKeyRegex = /^[A-Z0-9]+$/;
-
-    if (!projectKey) {
-        console.warn('[FRONT] Clé Jira obligatoire');
-        return;
-    }
-
-    if (!projectKeyRegex.test(projectKey)) {
-        console.warn(
-            '[FRONT] Clé Jira invalide :',
-            projectKey
-        );
-
-        return;
-    }
-
-    if (projectKey.length < 2 || projectKey.length > 10) {
-        console.warn(
-            '[FRONT] Longueur de clé Jira invalide'
-        );
-
-        return;
-    }
-
-    /*
-     * Validation du responsable
-     */
-    if (!formData.responsable) {
-        console.warn('[FRONT] Responsable obligatoire');
-        return;
-    }
-
-    /*
-     * Validation du type Jira
-     */
-    if (!formData.typeJira) {
-        console.warn('[FRONT] Type Jira obligatoire');
-        return;
-    }
-
-    try {
-        const payload = {
-            name,
-            projectKey,
-            description: formData.description,
-            axle: formData.axle,
-            responsable: formData.responsable,
-            typeJira: formData.typeJira,
+            metadata,
         };
+    }
+);
+
+
+/**
+ * =========================================================
+ * SUPPRESSION DU PROJET JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'deleteProgram',
+    async (request) => {
 
         console.log(
-            '[FRONT] Payload envoyé à createProgram :',
-            payload
+            '[deleteProgram] START'
         );
 
-        const result = await invoke(
-            'createProgram',
-            payload
-        );
+
+        const data =
+            request.payload || {};
+
 
         console.log(
-            '[FRONT] Projet Jira créé :',
+            '[deleteProgram] Payload reçu :',
+            data
+        );
+
+
+        const {
+            projectId,
+        } = data;
+
+
+        /**
+         * =====================================================
+         * VALIDATION
+         * =====================================================
+         */
+
+        if (!projectId) {
+
+            throw new Error(
+                'L’identifiant du projet Jira est obligatoire.'
+            );
+        }
+
+
+        console.log(
+            '[deleteProgram] Suppression du projet Jira :',
+            projectId
+        );
+
+
+        /**
+         * =====================================================
+         * SUPPRESSION JIRA
+         * =====================================================
+         */
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project/${projectId}`,
+                    {
+
+                        method: 'DELETE',
+
+                        headers: {
+
+                            Accept:
+                                'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[deleteProgram] Jira status:',
+            response.status
+        );
+
+
+        /**
+         * =====================================================
+         * ERREUR JIRA
+         * =====================================================
+         */
+
+        if (!response.ok) {
+
+            const responseText =
+                await response.text();
+
+
+            console.error(
+                '[deleteProgram] Jira error:',
+                responseText
+            );
+
+
+            throw new Error(
+                `Impossible de supprimer le projet Jira : ${response.status} ${responseText}`
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * SUPPRESSION MÉTADONNÉES KVS
+         * =====================================================
+         */
+
+        try {
+
+            await deleteProgramMetadata(
+                projectId
+            );
+
+            console.log(
+                '[deleteProgram] Métadonnées KVS supprimées :',
+                projectId
+            );
+
+        } catch (storageError) {
+
+            /**
+             * Jira a déjà été supprimé.
+             *
+             * On ne transforme donc pas une suppression Jira
+             * réussie en échec à cause du Storage.
+             */
+
+            console.error(
+                '[deleteProgram] Erreur suppression metadata KVS:',
+                storageError
+            );
+        }
+
+
+        /**
+         * =====================================================
+         * SUCCÈS
+         * =====================================================
+         */
+
+        console.log(
+            '[deleteProgram] Projet Jira supprimé avec succès :',
+            projectId
+        );
+
+
+        return {
+
+            success:
+                true,
+
+            id:
+                projectId,
+        };
+    }
+);
+
+
+/**
+ * =========================================================
+ * VÉRIFIER LA PERMISSION DE CRÉATION
+ * =========================================================
+ */
+
+resolver.define(
+    'checkProjectCreationPermission',
+    async () => {
+
+        console.log(
+            '[checkProjectCreationPermission] START'
+        );
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/mypermissions?permissions=ADMINISTER`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[checkProjectCreationPermission] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[checkProjectCreationPermission] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de vérifier les permissions Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const permissions =
+            await response.json();
+
+
+        console.log(
+            '[checkProjectCreationPermission] Permissions:',
+            permissions
+        );
+
+
+        return permissions;
+    }
+);
+
+
+/**
+ * =========================================================
+ * RÉCUPÉRER LES TEMPLATES JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'getProjectTemplates',
+    async () => {
+
+        console.log(
+            '[getProjectTemplates] START'
+        );
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project-templates`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[getProjectTemplates] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[getProjectTemplates] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de récupérer les templates Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const templates =
+            await response.json();
+
+
+        console.log(
+            '[getProjectTemplates] Jira templates:',
+            templates
+        );
+
+
+        return templates;
+    }
+);
+
+
+/**
+ * =========================================================
+ * RÉCUPÉRER LES TYPES DE PROJETS JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'getAccessibleProjectTypes',
+    async () => {
+
+        console.log(
+            '[getAccessibleProjectTypes] START'
+        );
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project/type/accessible`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[getAccessibleProjectTypes] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[getAccessibleProjectTypes] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de récupérer les types de projets Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const projectTypes =
+            await response.json();
+
+
+        console.log(
+            '[getAccessibleProjectTypes] Jira project types:',
+            projectTypes
+        );
+
+
+        return projectTypes.map(
+            (projectType) => ({
+
+                key:
+                    projectType.key,
+
+                name:
+                    projectType.formattedKey ||
+                    projectType.name ||
+                    projectType.key,
+
+                description:
+                    projectType.description ||
+                    '',
+            })
+        );
+    }
+);
+
+
+/**
+ * =========================================================
+ * RÉCUPÉRER LES CATÉGORIES JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'getProjectCategories',
+    async () => {
+
+        console.log(
+            '[getProjectCategories] START'
+        );
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/projectCategory`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[getProjectCategories] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[getProjectCategories] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de récupérer les catégories Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const categories =
+            await response.json();
+
+
+        console.log(
+            '[getProjectCategories] Jira categories:',
+            categories
+        );
+
+
+        return categories.map(
+            (category) => ({
+
+                id:
+                    category.id,
+
+                name:
+                    category.name,
+
+                description:
+                    category.description ||
+                    '',
+            })
+        );
+    }
+);
+
+
+/**
+ * =========================================================
+ * RECHERCHER LES UTILISATEURS JIRA
+ * =========================================================
+ */
+
+resolver.define(
+    'searchUsers',
+    async (request) => {
+
+        const query =
+            request.payload?.query?.trim() ||
+            '';
+
+
+        console.log(
+            '[searchUsers] START'
+        );
+
+
+        console.log(
+            '[searchUsers] Query:',
+            query
+        );
+
+
+        if (!query) {
+
+            return [];
+        }
+
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/user/search?query=${query}&maxResults=20`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[searchUsers] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[searchUsers] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de rechercher les utilisateurs Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const users =
+            await response.json();
+
+
+        console.log(
+            '[searchUsers] Users returned:',
+            users
+        );
+
+
+        return users.map(
+            (user) => ({
+
+                accountId:
+                    user.accountId,
+
+                displayName:
+                    user.displayName,
+
+                emailAddress:
+                    user.emailAddress ||
+                    '',
+
+                active:
+                    user.active,
+            })
+        );
+    }
+);
+
+
+/**
+ * =========================================================
+ * RÉCUPÉRER LES PROJETS JIRA
+ * =========================================================
+ *
+ * On récupère :
+ *
+ * 1. les données natives Jira
+ * 2. les métadonnées KVS
+ *
+ * puis on fusionne les deux.
+ *
+ * Ainsi les données métier sont conservées
+ * après un F5 / rechargement.
+ * =========================================================
+ */
+
+resolver.define(
+    'getProjects',
+    async () => {
+
+        console.log(
+            '[getProjects] START'
+        );
+
+
+        /**
+         * =====================================================
+         * RÉCUPÉRATION JIRA
+         * =====================================================
+         */
+
+        const response =
+            await api
+                .asApp()
+                .requestJira(
+                    route`/rest/api/3/project/search?startAt=0&maxResults=50`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+
+
+        console.log(
+            '[getProjects] Jira status:',
+            response.status
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            console.error(
+                '[getProjects] Jira error:',
+                errorText
+            );
+
+
+            throw new Error(
+                `Impossible de récupérer les projets Jira : ${response.status} ${errorText}`
+            );
+        }
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            '[getProjects] Jira response:',
             result
         );
 
-        const program = {
-            id: result.id,
-            jiraKey: result.key,
 
-            name,
-            projectKey,
+        const projects =
+            Array.isArray(result.values)
+                ? result.values
+                : [];
 
-            status: formData.status,
-
-            budget: formData.budget,
-            budgetCons:
-                formData.budgetCons || '0FCFA',
-
-            startDate:
-                formData.startDate || '00/00/0000',
-
-            endDate:
-                formData.endDate || '00/00/0000',
-
-            axle: formData.axle,
-            responsable: formData.responsable,
-            sponsor: formData.sponsor,
-            typeJira: formData.typeJira,
-            description: formData.description,
-        };
-
-        setPrograms((prev) => [
-            program,
-            ...prev,
-        ]);
-
-        setSelectedId(program.id);
 
         console.log(
-            '[FRONT] Programme ajouté au tableau :',
-            program
+            '[getProjects] Nombre de projets Jira:',
+            projects.length
         );
 
-    } catch (error) {
-        console.error(
-            '[FRONT] Erreur création programme :',
-            error
+
+        /**
+         * =====================================================
+         * RÉCUPÉRATION DES MÉTADONNÉES KVS
+         * =====================================================
+         */
+
+        const projectsWithMetadata =
+            await Promise.all(
+
+                projects.map(
+                    async (project) => {
+
+                        const metadata =
+                            await getProgramMetadata(
+                                project.id
+                            );
+
+
+                        return {
+
+                            /**
+                             * ---------------------------------
+                             * DONNÉES JIRA
+                             * ---------------------------------
+                             */
+
+                            id:
+                                project.id,
+
+                            jiraId:
+                                project.id,
+
+                            key:
+                                project.key,
+
+                            projectKey:
+                                project.key,
+
+                            jiraKey:
+                                project.key,
+
+                            name:
+                                project.name,
+
+                            description:
+                                project.description ||
+                                '',
+
+                            projectTypeKey:
+                                project.projectTypeKey ||
+                                '',
+
+                            typeJira:
+                                metadata.typeJira ||
+                                project.projectTypeKey ||
+                                '',
+
+                            style:
+                                project.style ||
+                                '',
+
+                            leadAccountId:
+                                project.lead?.accountId ||
+                                '',
+
+                            responsable:
+                                project.lead?.accountId ||
+                                '',
+
+                            categoryId:
+                                project.projectCategory?.id ||
+                                '',
+
+                            axle:
+                                project.projectCategory?.id ||
+                                '',
+
+                            avatarUrls:
+                                project.avatarUrls ||
+                                {},
+
+                            self:
+                                project.self ||
+                                '',
+
+                            jiraUrl:
+                                project.self ||
+                                '',
+
+
+                            /**
+                             * ---------------------------------
+                             * MÉTADONNÉES KVS
+                             * ---------------------------------
+                             */
+
+                            sponsor:
+                                metadata.sponsor ||
+                                '',
+
+                            startDate:
+                                metadata.startDate ||
+                                '',
+
+                            endDate:
+                                metadata.endDate ||
+                                '',
+
+                            status:
+                                metadata.status ||
+                                'EN COURS',
+
+                            budget:
+                                metadata.budget ||
+                                '',
+
+                            budgetCons:
+                                metadata.budgetCons ||
+                                '',
+
+                            template:
+                                metadata.template ||
+                                '',
+                        };
+                    }
+                )
+            );
+
+
+        console.log(
+            '[getProjects] Projets enrichis :',
+            projectsWithMetadata
         );
+
+
+        console.log(
+            '[getProjects] Nombre final de programmes :',
+            projectsWithMetadata.length
+        );
+
+
+        return projectsWithMetadata;
     }
-};
+);
 
-resolver.define('getIssues', async (request) => getIssues(request.payload));
 
-export const handler = resolver.getDefinitions();
+/**
+ * =========================================================
+ * RÉCUPÉRER LES ISSUES
+ * =========================================================
+ */
+
+resolver.define(
+    'getIssues',
+    async (request) =>
+        getIssues(
+            request.payload
+        )
+);
+
+
+/**
+ * =========================================================
+ * EXPORT FORGE
+ * =========================================================
+ */
+
+export const handler =
+    resolver.getDefinitions();
