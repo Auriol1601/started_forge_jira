@@ -2,12 +2,13 @@ import React from 'react';
 
 export default function ProgramFormPanel({
     formData,
-    categories = [],
-    users = [],
-    projectTypes = [],
+    categories,
+    users,
+    projectTypes,
     onChange,
     onSubmit,
-    isEditing = false
+    isEditing,
+    isCreating,
 }) {
     return (
         <aside className="program-form-panel">
@@ -324,13 +325,15 @@ export default function ProgramFormPanel({
                     type="button"
                     className="primary-action"
                     onClick={onSubmit}
+                    disabled={isCreating}
                 >
-                    {isEditing
-                        ? 'Modifier le programme'
-                        : 'Créer un programme'}
+                    {isCreating
+                        ? 'Création en cours...'
+                        : isEditing
+                            ? 'Modifier le programme'
+                            : 'Créer un programme'}
                 </button>
             </div>
-
         </aside>
     );
 }

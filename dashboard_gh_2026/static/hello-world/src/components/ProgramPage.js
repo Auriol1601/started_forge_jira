@@ -4,6 +4,12 @@ import ProgramTablePanel from './ProgramTablePanel';
 import { invoke } from '@forge/bridge';
 
 
+/*
+ * =========================================================
+ * FORMULAIRE VIDE
+ * =========================================================
+ */
+
 const emptyForm = {
     axle: '',
     name: '',
@@ -11,9 +17,10 @@ const emptyForm = {
     responsable: '',
     sponsor: '',
     typeJira: '',
+    template: '',
     startDate: '',
     endDate: '',
-    status: '',
+    status: 'EN COURS',
     budget: '',
     budgetCons: '',
     description: '',
@@ -42,9 +49,6 @@ export default function ProgramPage() {
      * =========================================================
      * PROGRAMMES
      * =========================================================
-     *
-     * Les programmes affichés correspondent actuellement
-     * aux projets Jira récupérés par getProjects.
      */
 
     const [programs, setPrograms] = useState([]);
@@ -57,8 +61,12 @@ export default function ProgramPage() {
      */
 
     const [selectedId, setSelectedId] = useState(null);
+
     const [isEditing, setIsEditing] = useState(false);
+
     const [pendingDelete, setPendingDelete] = useState(null);
+
+    const [isCreating, setIsCreating] = useState(false);
 
 
     /*
@@ -232,7 +240,7 @@ export default function ProgramPage() {
 
                 /*
                  * Sélection automatique du premier axe
-                 * uniquement si aucun axe n'est sélectionné.
+                 * uniquement lors du chargement initial.
                  */
 
                 if (
@@ -240,6 +248,7 @@ export default function ProgramPage() {
                 ) {
 
                     setFormData((prev) => ({
+
                         ...prev,
 
                         axle:
@@ -309,7 +318,7 @@ export default function ProgramPage() {
 
                 /*
                  * Sélection automatique du premier type
-                 * si aucun type n'est encore sélectionné.
+                 * lors du chargement initial.
                  */
 
                 if (
@@ -317,6 +326,7 @@ export default function ProgramPage() {
                 ) {
 
                     setFormData((prev) => ({
+
                         ...prev,
 
                         typeJira:
@@ -357,7 +367,9 @@ export default function ProgramPage() {
     ) => {
 
         setFormData((prev) => ({
+
             ...prev,
+
             [field]: value,
         }));
     };
@@ -365,7 +377,7 @@ export default function ProgramPage() {
 
     /*
      * =========================================================
-     * SÉLECTION D'UN PROGRAMME POUR MODIFICATION
+     * SÉLECTION D'UN PROGRAMME
      * =========================================================
      */
 
@@ -385,7 +397,9 @@ export default function ProgramPage() {
         );
 
         setFormData({
+
             ...emptyForm,
+
             ...program,
 
             projectKey:
@@ -415,7 +429,7 @@ export default function ProgramPage() {
 
         /*
          * -----------------------------------------------------
-         * VÉRIFICATION DU PROGRAMME SÉLECTIONNÉ
+         * VÉRIFICATION
          * -----------------------------------------------------
          */
 
@@ -431,7 +445,7 @@ export default function ProgramPage() {
 
         /*
          * -----------------------------------------------------
-         * VALIDATION DU NOM
+         * VALIDATION
          * -----------------------------------------------------
          */
 
@@ -473,6 +487,30 @@ export default function ProgramPage() {
 
             responsable:
                 formData.responsable || '',
+
+            sponsor:
+                formData.sponsor || '',
+
+            typeJira:
+                formData.typeJira || '',
+
+            template:
+                formData.template || '',
+
+            startDate:
+                formData.startDate || '',
+
+            endDate:
+                formData.endDate || '',
+
+            status:
+                formData.status || '',
+
+            budget:
+                formData.budget || '',
+
+            budgetCons:
+                formData.budgetCons || '',
         };
 
 
@@ -481,12 +519,6 @@ export default function ProgramPage() {
             payload
         );
 
-
-        /*
-         * -----------------------------------------------------
-         * APPEL FORGE
-         * -----------------------------------------------------
-         */
 
         try {
 
@@ -518,7 +550,6 @@ export default function ProgramPage() {
                         return program;
                     }
 
-
                     return {
 
                         ...program,
@@ -527,11 +558,11 @@ export default function ProgramPage() {
                             formData.name,
 
                         projectKey:
-                            result.key ||
+                            result?.key ||
                             formData.projectKey,
 
                         jiraKey:
-                            result.key ||
+                            result?.key ||
                             formData.projectKey,
 
                         description:
@@ -548,6 +579,9 @@ export default function ProgramPage() {
 
                         sponsor:
                             formData.sponsor,
+
+                        template:
+                            formData.template,
 
                         startDate:
                             formData.startDate,
@@ -568,14 +602,9 @@ export default function ProgramPage() {
             );
 
 
-            console.log(
-                '[FRONT] Programme mis à jour dans le tableau'
-            );
-
-
             /*
              * -------------------------------------------------
-             * SORTIE DU MODE MODIFICATION
+             * SORTIE DU MODE ÉDITION
              * -------------------------------------------------
              */
 
@@ -586,11 +615,8 @@ export default function ProgramPage() {
 
             /*
              * -------------------------------------------------
-             * RÉINITIALISATION DU FORMULAIRE
+             * RESET
              * -------------------------------------------------
-             *
-             * On conserve l'axe et le type Jira pour faciliter
-             * la création du programme suivant.
              */
 
             setFormData({
@@ -598,10 +624,14 @@ export default function ProgramPage() {
                 ...emptyForm,
 
                 axle:
-                    formData.axle,
+                    categories.length > 0
+                        ? categories[0].id
+                        : '',
 
                 typeJira:
-                    formData.typeJira,
+                    projectTypes.length > 0
+                        ? projectTypes[0].key
+                        : '',
             });
 
 
@@ -625,7 +655,7 @@ export default function ProgramPage() {
      * =========================================================
      */
 
-    const createProgram = async () => {
+    const handleCreate = async () => {
 
         console.log(
             '[FRONT] Création du programme démarrée'
@@ -633,15 +663,21 @@ export default function ProgramPage() {
 
 
         /*
-         * -----------------------------------------------------
-         * VALIDATION DU NOM
-         * -----------------------------------------------------
+         * =====================================================
+         * VALIDATION
+         * =====================================================
          */
 
-        if (
-            !formData.name ||
-            !formData.name.trim()
-        ) {
+        const name =
+            (formData.name || '').trim();
+
+        const projectKey =
+            (formData.projectKey || '')
+                .trim()
+                .toUpperCase();
+
+
+        if (!name) {
 
             console.warn(
                 '[FRONT] Nom du programme obligatoire'
@@ -651,39 +687,19 @@ export default function ProgramPage() {
         }
 
 
-        /*
-         * -----------------------------------------------------
-         * VALIDATION DE LA CLÉ JIRA
-         * -----------------------------------------------------
-         */
-
-        if (
-            !formData.projectKey ||
-            !formData.projectKey.trim()
-        ) {
+        if (!projectKey) {
 
             console.warn(
-                '[FRONT] Clé du projet Jira obligatoire'
+                '[FRONT] Clé Jira obligatoire'
             );
 
             return;
         }
 
 
-        const normalizedProjectKey =
-            formData.projectKey
-                .trim()
-                .toUpperCase();
-
-
-        /*
-         * La clé doit contenir uniquement
-         * des lettres et chiffres.
-         */
-
         if (
             !/^[A-Z0-9]+$/.test(
-                normalizedProjectKey
+                projectKey
             )
         ) {
 
@@ -695,13 +711,9 @@ export default function ProgramPage() {
         }
 
 
-        /*
-         * Longueur de la clé.
-         */
-
         if (
-            normalizedProjectKey.length < 2 ||
-            normalizedProjectKey.length > 10
+            projectKey.length < 2 ||
+            projectKey.length > 10
         ) {
 
             console.warn(
@@ -712,15 +724,7 @@ export default function ProgramPage() {
         }
 
 
-        /*
-         * -----------------------------------------------------
-         * RESPONSABLE
-         * -----------------------------------------------------
-         */
-
-        if (
-            !formData.responsable
-        ) {
+        if (!formData.responsable) {
 
             console.warn(
                 '[FRONT] Responsable obligatoire'
@@ -730,15 +734,7 @@ export default function ProgramPage() {
         }
 
 
-        /*
-         * -----------------------------------------------------
-         * TYPE JIRA
-         * -----------------------------------------------------
-         */
-
-        if (
-            !formData.typeJira
-        ) {
+        if (!formData.typeJira) {
 
             console.warn(
                 '[FRONT] Type Jira obligatoire'
@@ -749,32 +745,60 @@ export default function ProgramPage() {
 
 
         /*
-         * -----------------------------------------------------
-         * PAYLOAD
-         * -----------------------------------------------------
+         * =====================================================
+         * PAYLOAD COMPLET
+         * =====================================================
          */
 
         const payload = {
 
-            name:
-                formData.name.trim(),
-
-            projectKey:
-                normalizedProjectKey,
-
-            description:
-                formData.description || '',
-
             axle:
                 formData.axle || '',
+
+            name,
+
+            projectKey,
 
             responsable:
                 formData.responsable,
 
+            sponsor:
+                formData.sponsor || '',
+
             typeJira:
                 formData.typeJira,
+
+            template:
+                formData.template || '',
+
+            startDate:
+                formData.startDate || '',
+
+            endDate:
+                formData.endDate || '',
+
+            status:
+                formData.status ||
+                'EN COURS',
+
+            budget:
+                formData.budget || '',
+
+            budgetCons:
+                formData.budgetCons || '',
+
+            description:
+                formData.description || '',
         };
 
+
+        console.log(
+            '[FRONT] ================================='
+        );
+
+        console.log(
+            '[FRONT] PAYLOAD CRÉATION'
+        );
 
         console.log(
             '[FRONT] Données envoyées à createProgram :',
@@ -783,175 +807,217 @@ export default function ProgramPage() {
 
 
         /*
-         * -----------------------------------------------------
-         * APPEL FORGE
-         * -----------------------------------------------------
- */
+         * =====================================================
+         * CRÉATION JIRA
+         * =====================================================
+         */
 
-        try {
-
-            const result =
-                await invoke(
-                    'createProgram',
-                    payload
-                );
-
-
-            console.log(
-                '[FRONT] Projet Jira créé :',
-                result
+        const result =
+            await invoke(
+                'createProgram',
+                payload
             );
 
 
-            /*
-             * -------------------------------------------------
-             * CONSTRUCTION DU PROGRAMME LOCAL
-             * -------------------------------------------------
-             */
-
-            const program = {
-
-                id:
-                    result.id,
-
-                jiraKey:
-                    result.key,
-
-                name:
-                    formData.name.trim(),
-
-                projectKey:
-                    normalizedProjectKey,
-
-                status:
-                    formData.status,
-
-                budget:
-                    formData.budget,
-
-                budgetCons:
-                    formData.budgetCons ||
-                    '0FCFA',
-
-                startDate:
-                    formData.startDate ||
-                    '00/00/0000',
-
-                endDate:
-                    formData.endDate ||
-                    '00/00/0000',
-
-                axle:
-                    formData.axle,
-
-                responsable:
-                    formData.responsable,
-
-                sponsor:
-                    formData.sponsor,
-
-                typeJira:
-                    formData.typeJira,
-
-                template:
-                    formData.template,
-
-                description:
-                    formData.description,
-            };
+        console.log(
+            '[FRONT] Projet Jira créé :',
+            result
+        );
 
 
-            /*
-             * -------------------------------------------------
-             * AJOUT DANS LE TABLEAU
-             * -------------------------------------------------
-             */
+        /*
+         * =====================================================
+         * PROGRAMME LOCAL
+         * =====================================================
+         */
 
-            setPrograms((prev) => [
-                program,
-                ...prev,
-            ]);
+        const program = {
+
+            id:
+                result.id,
+
+            jiraId:
+                result.id,
+
+            projectKey:
+                result.key ||
+                projectKey,
+
+            jiraKey:
+                result.key ||
+                projectKey,
+
+            jiraUrl:
+                result.self ||
+                '',
+
+            name:
+                result.name ||
+                name,
+
+            status:
+                formData.status ||
+                'EN COURS',
+
+            budget:
+                formData.budget ||
+                '',
+
+            budgetCons:
+                formData.budgetCons ||
+                '',
+
+            startDate:
+                formData.startDate ||
+                '',
+
+            endDate:
+                formData.endDate ||
+                '',
+
+            axle:
+                formData.axle ||
+                '',
+
+            responsable:
+                formData.responsable ||
+                '',
+
+            sponsor:
+                formData.sponsor ||
+                '',
+
+            typeJira:
+                formData.typeJira ||
+                '',
+
+            template:
+                formData.template ||
+                '',
+
+            description:
+                formData.description ||
+                '',
+        };
 
 
-            console.log(
-                '[FRONT] Programme ajouté au tableau :',
-                program
-            );
+        console.log(
+            '[FRONT] Programme local créé :',
+            program
+        );
 
 
-            /*
-             * -------------------------------------------------
-             * IMPORTANT :
-             * NE PAS sélectionner le programme créé.
-             *
-             * Sinon selectedId provoquerait immédiatement
-             * le passage en mode modification.
-             * -------------------------------------------------
-             */
+        /*
+         * =====================================================
+         * AJOUT AU TABLEAU
+         * =====================================================
+         */
 
-            setSelectedId(null);
+        setPrograms((prev) => [
 
-            setIsEditing(false);
+            program,
 
-
-            /*
-             * -------------------------------------------------
-             * RÉINITIALISATION DU FORMULAIRE
-             * -------------------------------------------------
-             *
-             * On conserve :
-             *
-             * - l'axe
-             * - le type Jira
-             *
-             * afin de faciliter la création suivante.
-             */
-
-            setFormData({
-
-                ...emptyForm,
-
-                axle:
-                    formData.axle,
-
-                typeJira:
-                    formData.typeJira,
-            });
+            ...prev,
+        ]);
 
 
-            console.log(
-                '[FRONT] Formulaire réinitialisé'
-            );
+        /*
+         * =====================================================
+         * IMPORTANT
+         *
+         * NE PAS sélectionner le programme créé.
+         *
+         * Sinon le formulaire pourrait repasser
+         * automatiquement en mode modification.
+         * =====================================================
+         */
+
+        setSelectedId(null);
+
+        setIsEditing(false);
 
 
-        } catch (error) {
+        /*
+         * =====================================================
+         * RESET COMPLET DU FORMULAIRE
+         *
+         * On conserve uniquement :
+         *
+         * - premier axe disponible
+         * - premier type Jira disponible
+         *
+         * Toutes les autres données sont supprimées.
+         * =====================================================
+         */
 
-            console.error(
-                '[FRONT] Erreur création programme :',
-                error
-            );
-        }
+        setFormData({
+
+            ...emptyForm,
+
+            axle:
+                categories.length > 0
+                    ? categories[0].id
+                    : '',
+
+            typeJira:
+                projectTypes.length > 0
+                    ? projectTypes[0].key
+                    : '',
+        });
+
+
+        console.log(
+            '[FRONT] ================================='
+        );
+
+        console.log(
+            '[FRONT] Formulaire réinitialisé'
+        );
+
+        console.log(
+            '[FRONT] Prêt pour une nouvelle création'
+        );
     };
 
 
     /*
      * =========================================================
-     * SOUMISSION DU FORMULAIRE
+     * SOUMISSION UNIQUE
      * =========================================================
      *
-     * Une seule porte d'entrée :
+     * Une seule porte d'entrée pour le bouton.
      *
-     * - mode création     → createProgram
-     * - mode modification → handleUpdate
+     * Création :
+     *     handleCreate()
+     *
+     * Modification :
+     *     handleUpdate()
      * =========================================================
      */
 
     const handleSubmit = async () => {
 
-        if (
-            isEditing &&
-            selectedId
-        ) {
+        /*
+         * Protection contre le double clic.
+         */
+
+        if (isCreating) {
+
+            console.warn(
+                '[FRONT] Opération déjà en cours'
+            );
+
+            return;
+        }
+
+
+        /*
+         * -----------------------------------------------------
+         * MODE MODIFICATION
+         * -----------------------------------------------------
+         */
+
+        if (isEditing) {
 
             await handleUpdate();
 
@@ -959,19 +1025,35 @@ export default function ProgramPage() {
         }
 
 
-        await createProgram();
+        /*
+         * -----------------------------------------------------
+         * MODE CRÉATION
+         * -----------------------------------------------------
+         */
+
+        setIsCreating(true);
+
+        try {
+
+            await handleCreate();
+
+        } catch (error) {
+
+            console.error(
+                '[FRONT] Erreur création programme :',
+                error
+            );
+
+        } finally {
+
+            setIsCreating(false);
+        }
     };
 
 
     /*
      * =========================================================
      * SUPPRESSION
-     *
-     * ATTENTION :
-     * suppression Jira non encore intégrée.
-     *
-     * Pour le moment :
-     * suppression uniquement du tableau local.
      * =========================================================
      */
 
@@ -981,40 +1063,37 @@ export default function ProgramPage() {
             return;
         }
 
-        const deletedId = pendingDelete.id;
+        const deletedId =
+            pendingDelete.id;
 
         console.log(
             '[FRONT] Suppression du programme démarrée :',
             pendingDelete
         );
 
-        /*
-         * =========================================================
-         * APPEL BACKEND
-         * =========================================================
-         */
 
         try {
 
-            const result = await invoke(
-                'deleteProgram',
-                {
-                    projectId: deletedId,
-                }
-            );
+            const result =
+                await invoke(
+                    'deleteProgram',
+                    {
+                        projectId:
+                            deletedId,
+                    }
+                );
+
 
             console.log(
                 '[FRONT] Projet Jira supprimé :',
                 result
             );
 
+
             /*
-             * =====================================================
-             * SUPPRESSION DU TABLEAU LOCAL
-             * =====================================================
-             *
-             * On ne retire le programme du tableau
-             * QU'APRÈS confirmation de Jira.
+             * -------------------------------------------------
+             * TABLEAU
+             * -------------------------------------------------
              */
 
             setPrograms((prev) =>
@@ -1024,32 +1103,32 @@ export default function ProgramPage() {
                 )
             );
 
-            console.log(
-                '[FRONT] Programme supprimé du tableau :',
-                deletedId
-            );
 
             /*
-             * =====================================================
-             * FERMETURE DE LA MODALE
-             * =====================================================
+             * -------------------------------------------------
+             * FERMETURE MODALE
+             * -------------------------------------------------
              */
 
             setPendingDelete(null);
 
+
             /*
-             * =====================================================
+             * -------------------------------------------------
              * SI LE PROGRAMME SUPPRIMÉ ÉTAIT SÉLECTIONNÉ
-             * =====================================================
+             * -------------------------------------------------
              */
 
-            if (selectedId === deletedId) {
+            if (
+                selectedId === deletedId
+            ) {
 
                 setSelectedId(null);
 
                 setIsEditing(false);
 
                 setFormData({
+
                     ...emptyForm,
 
                     axle:
@@ -1064,6 +1143,7 @@ export default function ProgramPage() {
                 });
             }
 
+
             console.log(
                 '[FRONT] Suppression du programme terminée'
             );
@@ -1074,16 +1154,6 @@ export default function ProgramPage() {
                 '[FRONT] Erreur suppression programme :',
                 error
             );
-
-            /*
-             * IMPORTANT :
-             * Le programme reste dans le tableau
-             * si Jira refuse la suppression.
-             *
-             * La modale reste également ouverte afin
-             * que l'utilisateur puisse comprendre que
-             * la suppression n'a pas abouti.
-             */
 
             alert(
                 error?.message ||
@@ -1172,6 +1242,10 @@ export default function ProgramPage() {
 
                         isEditing={
                             isEditing
+                        }
+
+                        isCreating={
+                            isCreating
                         }
 
                     />
@@ -1271,6 +1345,7 @@ export default function ProgramPage() {
                     )}
 
                 </>
+
             )}
 
         </main>
